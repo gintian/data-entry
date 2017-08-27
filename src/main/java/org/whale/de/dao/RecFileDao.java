@@ -16,7 +16,7 @@ import org.whale.system.dao.Page;
 public class RecFileDao extends BaseDao<RecFile, Long> {
 
 	public void queryRecFilePage(Page page,Map<String, String> paramMap) {
-		StringBuilder sql = new StringBuilder("SELECT *, t.FILE_CNT as DE_SIGN_UP, CASE WHEN t.HANDLE_PRES IS NOT NULL AND (t.IS_HANDLE IS NULL OR t.IS_HANDLE = 0) AND t.HANDLE_PRES < CURRENT_DATE() THEN 1 ELSE 0 END AS IS_OVERTIME FROM DE_REC_FILE t where 1=1 ");
+		StringBuilder sql = new StringBuilder("SELECT t.*,s.userName, t.FILE_CNT as DE_SIGN_UP, CASE WHEN t.HANDLE_PRES IS NOT NULL AND (t.IS_HANDLE IS NULL OR t.IS_HANDLE = 0) AND t.HANDLE_PRES < CURRENT_DATE() THEN 1 ELSE 0 END AS IS_OVERTIME FROM DE_REC_FILE t inner join sys_user s on s.userId = t.update_by_id where 1=1 ");
 		
 		if(paramMap != null && paramMap.size() > 0 ){
 			String DICT_FILE_SOURCE = paramMap.get("DICT_FILE_SOURCE");
@@ -74,6 +74,16 @@ public class RecFileDao extends BaseDao<RecFile, Long> {
 				sql.append("and t.IS_PROPOSED = ? ");
 				page.addArg(IS_PROPOSED.trim());
 			}
+			String SIGN_UP_STATUS = paramMap.get("SIGN_UP_STATUS");
+			if(Strings.isNotBlank(SIGN_UP_STATUS)){
+				sql.append("and t.SIGN_UP_STATUS = ? ");
+				page.addArg(SIGN_UP_STATUS.trim());
+			}
+			String DIRECTOR_OPER = paramMap.get("DIRECTOR_OPER");
+			if(Strings.isNotBlank(IS_PROPOSED)){
+				sql.append("and t.DIRECTOR_OPER = ? ");
+				page.addArg(DIRECTOR_OPER.trim());
+			}
 		}
 		
 		page.setSql(sql.toString());
@@ -108,6 +118,41 @@ public class RecFileDao extends BaseDao<RecFile, Long> {
 		t.setCreateByTime(old.getCreateByTime());
 		t.setIsValid(1);
 		super.update(t);
+	}
+
+	public void queryRecFileSignPage(Page page, Map<String, String> paramMap) {
+		StringBuilder sql = new StringBuilder("SELECT t.*, o.ORG_COMPANY, s.userName, t.FILE_CNT as DE_SIGN_UP, CASE WHEN t.HANDLE_PRES IS NOT NULL AND (t.IS_HANDLE IS NULL OR t.IS_HANDLE = 0) AND t.HANDLE_PRES < CURRENT_DATE() THEN 1 ELSE 0 END AS IS_OVERTIME FROM DE_REC_FILE t inner join sys_user s on s.userId = t.update_by_id LEFT JOIN de_rec_file_sign f ON f.FK_REC_FILE = t.PK_REC_FILE LEFT JOIN de_organization o ON o.PK_ORGANIZATION = f.FK_ORGANIZATION where 1=1 ");
+		
+		if(paramMap != null && paramMap.size() > 0 ){
+			String REC_DATE = paramMap.get("REC_DATE");
+			if(Strings.isNotBlank(REC_DATE)){
+				sql.append("and t.REC_DATE like ? ");
+				page.addArg("%"+REC_DATE.trim()+"%");
+			}
+			String FILE_CODE = paramMap.get("FILE_CODE");
+			if(Strings.isNotBlank(FILE_CODE)){
+				sql.append("and t.FILE_CODE like ? ");
+				page.addArg("%" + FILE_CODE.trim() + "%");
+			}
+			String FILE_TITLE = paramMap.get("FILE_TITLE");
+			if(Strings.isNotBlank(FILE_TITLE)){
+				sql.append("and t.FILE_TITLE like ? ");
+				page.addArg("%" + FILE_TITLE.trim() + "%");
+			}
+			String SIGN_UP_STATUS = paramMap.get("SIGN_UP_STATUS");
+			if(Strings.isNotBlank(SIGN_UP_STATUS)){
+				sql.append("and t.SIGN_UP_STATUS = ? ");
+				page.addArg(SIGN_UP_STATUS.trim());
+			}
+			String ORG_COMPANY = paramMap.get("ORG_COMPANY");
+			if(Strings.isNotBlank(ORG_COMPANY)){
+				sql.append("and o.ORG_COMPANY like ? ");
+				page.addArg("%" + ORG_COMPANY.trim() + "%");
+			}
+		}
+		
+		page.setSql(sql.toString());
+		this.queryPage(page);
 	}
 	
 }

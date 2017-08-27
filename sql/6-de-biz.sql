@@ -38,7 +38,7 @@ create table DE_REC_FILE
    PK_REC_FILE          int(11) not null auto_increment comment '主键',
    DICT_FILE_SOURCE     varchar(32) not null comment '文件来源，字典表：公安系统、外部系统、办公室内部收文、局直单位呈报',
    DICT_FILE_CATEGORY   varchar(32) not null comment '文件类别，字典表：公文件、机要件、挂号信件、普通信件',
-   DICT_REC_COMPANY     varchar(32) not null comment '来文单位，字典表：公安部、省公安厅、市委、市政府、市委政法委、市委办公厅、市政府办公厅、市委政法委办公厅、市综治办、市委组织部、市纪委',
+   DICT_REC_COMPANY     varchar(32) not null comment '来文单位，字典表：公安部、省公安厅、市委、市政府、市委政法委、市委办公厅、市政府办公厅、市委政法委办公室、市综治办、市委组织部、市纪委',
    REC_DATE             date not null comment '收文日期，格式yyyyMMdd',
    REC_NO               varchar(32) not null comment '收文号：流水号，自动生成',
    FILE_CODE            varchar(64) comment '文号，比如闽公宗（2017）051号',

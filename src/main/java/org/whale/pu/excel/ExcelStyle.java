@@ -12,6 +12,34 @@ import org.apache.poi.hssf.util.HSSFColor;
  */
 public class ExcelStyle {
 	
+	
+	/**
+	 * 设置顶部头样式
+	 * @param workbook
+	 * @param style
+	 * @return
+	 */
+	public static HSSFCellStyle setTopHeadStyle(HSSFWorkbook workbook, HSSFCellStyle style) {
+
+		style.setFillForegroundColor(HSSFColor.WHITE.index);
+		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		
+		HSSFFont font = workbook.createFont();
+		font.setFontName("仿宋_GB2312");    
+		font.setColor(HSSFColor.BLACK.index);
+		font.setFontHeightInPoints((short) 18);
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		
+		style.setFont(font);
+		return style;
+
+	}
+	
 	/**
 	 * 设置头样式
 	 * @param workbook

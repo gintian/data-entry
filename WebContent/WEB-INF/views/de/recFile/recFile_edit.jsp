@@ -6,7 +6,6 @@
 <%@include file="/html/jsp/common.jsp" %>
 <link href="${ctx}/html/css/flowPage.css" rel="stylesheet" />
 <script src="${ctx}/html/js/flowPage.js" type="text/javascript"></script>
-
 <script language="javascript">
 $(function(){
 	new ToolBar({items:[
@@ -87,11 +86,7 @@ $(function() {
 			'dictDense':{
 				required: true
 			},
-			'dictGrade':{
-				required: true
-			},
 			'fileCnt':{
-				required: true,
 				number:true
 			}
 	}
@@ -122,6 +117,23 @@ $(function() {
 		}
 	});
 	
+	$('input:checkbox').click(function(){
+		if($(this).attr('checked')){
+			$(this).nextAll('input').removeAttr("readonly");
+		}else{
+			$(this).nextAll('input').attr("readonly","readonly");
+			//$(this).nextAll('input').val('');
+		}
+	}); 
+	
+	var signTr = $('#signTr');
+	
+	<c:forEach var="rfSign" items="${rfSigns}">
+		$(':checkbox[value="${rfSign.fkOrganization}"]',signTr).attr('checked','checked')
+				.next('input').val('${rfSign.signUpOther}')
+				.next('input').val('${rfSign.signUp}')
+				.next('input').val('<fmt:formatDate value="${rfSign.signTime}" pattern="yyyy-MM-dd HH:mm:ss"/>');
+	</c:forEach> 
 });
 
 </script>
@@ -149,6 +161,24 @@ $(function() {
 										   <tag:dict id="dictFileSource" dictCode="DICT_FILE_SOURCE" headerLabel="--请选择--" value="${recFile.dictFileSource}"></tag:dict>
 							  </td>
 							 </tr>
+							   <tr>
+					       		<td class="td-label">收文号</td>
+							  	<td class="td-value">
+									   	   <input type="text"  id="recNo" name="recNo" value="<c:choose><c:when test="${empty recFile.recNo}">${nextRecNo}</c:when><c:otherwise>${recFile.recNo}</c:otherwise></c:choose>" readonly="readonly"/>
+							  </td>
+							 </tr>
+							  <tr>
+					       		<td class="td-label">收文日期</td>
+							  	<td class="td-value">
+									   	   <input type="text" class="date" id="recDate" name="recDate"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${recFile.recDate}" pattern="yyyy-MM-dd"/>"/>
+							  </td>
+							 </tr>
+							 <tr>
+					       		<td class="td-label">来文单位</td>
+							  	<td class="td-value">
+										   <tag:dict id="dictRecCompany" dictCode="DICT_REC_COMPANY" headerLabel="--请选择--" value="${recFile.dictRecCompany}"></tag:dict>
+							  </td>
+							 </tr>
 						     <tr>
 					       		<td class="td-label">文件类别</td>
 							  	<td class="td-value">
@@ -156,33 +186,15 @@ $(function() {
 							  </td>
 							 </tr>
 						     <tr>
-					       		<td class="td-label">来文单位</td>
+					       		<td class="td-label">文件标题</td>
 							  	<td class="td-value">
-										   <tag:dict id="dictRecCompany" dictCode="DICT_REC_COMPANY" headerLabel="--请选择--" value="${recFile.dictRecCompany}"></tag:dict>
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">收文日期</td>
-							  	<td class="td-value">
-									   	   <input type="text" class="date" id="recDate" name="recDate"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${recFile.recDate}" pattern="yyyy-MM-dd"/>"/>
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">收文号</td>
-							  	<td class="td-value">
-									   	   <input type="text"  id="recNo" name="recNo" value="<c:choose><c:when test="${empty recFile.recNo}">${nextRecNo}</c:when><c:otherwise>${recFile.recNo}</c:otherwise></c:choose>" readonly="readonly"/>
+							  				 <textarea type="text"  id="fileTitle" name="fileTitle">${recFile.fileTitle}</textarea>
 							  </td>
 							 </tr>
 						     <tr>
 					       		<td class="td-label">文号</td>
 							  	<td class="td-value">
 									   	   <input type="text"  id="fileCode" name="fileCode" value="${recFile.fileCode}" />
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">文件标题</td>
-							  	<td class="td-value">
-									   	   <input type="text"  id="fileTitle" name="fileTitle" value="${recFile.fileTitle}" />
 							  </td>
 							 </tr>
 						     <tr>
@@ -209,10 +221,11 @@ $(function() {
 									   	   <input type="text"  id="fileCnt" name="fileCnt" value="${recFile.fileCnt}" />
 							  </td>
 							 </tr>
-						     <tr>
-					       		<td class="td-label">办理时效</td>
+							 <tr>
+					       		<td class="td-label">是否急件</td>
 							  	<td class="td-value">
-									   	   <input type="text" class="date" id="handlePres" name="handlePres"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${recFile.handlePres}" pattern="yyyy-MM-dd"/>"/>
+									   	    <input type="radio" name="isDispatch" value="1" <c:if test="${recFile.isDispatch==1 or empty recFile.isDispatch}">  checked="checked"</c:if>>是</input>
+										 <input type="radio" name="isDispatch" value="0" <c:if test="${recFile.isDispatch==0}">  checked="checked"</c:if>>否</input>
 							  </td>
 							 </tr>
 						     <%-- <tr>
@@ -221,7 +234,7 @@ $(function() {
 									   	   <input type="text"  id="isHandle" name="isHandle" value="${recFile.isHandle}" />
 							  </td>
 							 </tr> --%>
-							 <c:if  test="${recFile.dictFileSource == 'FILE_SOURCE_GAXT' or recFile.dictFileSource == 'FILE_SOURCE_WBXT'}">
+							 <%-- <c:if  test="${recFile.dictFileSource == 'FILE_SOURCE_GAXT' or recFile.dictFileSource == 'FILE_SOURCE_WBXT'}"> --%>
 							     <tr>
 						       		<td class="td-label">是否拟办</td>
 								  	<td class="td-value">
@@ -235,15 +248,53 @@ $(function() {
 								  			 <textarea type="text"  id="proposedComments" name="proposedComments">${recFile.proposedComments}</textarea>
 								  </td>
 								 </tr>
-							</c:if>
-							<c:if test="${recFile.dictFileSource == 'FILE_SOURCE_BGSNBSW' or recFile.dictFileSource == 'FILE_SOURCE_JZDWCB'}">
+								 <tr id="signTr">
+									  <td class="td-label">签收单位</td>
+									  <td class="td-value">
+									  	  <c:set var="index" value="0"></c:set>
+									   	  <c:forEach items="${organizationMap}" var="map">
+									   	  		<tag:dict id="dictOrgCategory" dictCode="DICT_ORG_CATEGORY" readonly="true" value="${map.key}"></tag:dict>：<br/>
+										    	<c:forEach items="${map.value}" var="org">
+										    		 <input type="checkbox" name="recFileSigns[${index}].fkOrganization" value="${org.pkOrganization}">${org.orgCompany}</input>
+										    		 <input type="text" name="recFileSigns[${index}].signUpOther" <c:if test="${map.key != 'ORG_CATEGORY_QT'}">style="display:none"</c:if>/>&nbsp;&nbsp;
+										    		 签收人：<input type="text" name="recFileSigns[${index}].signUp" style="width:100px;height:initial"></input>&nbsp;&nbsp;
+										    		 签收时间： <input type="text" class="date" name="recFileSigns[${index}].signTime" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:120px;height:initial"/>
+										    		 <br/>
+										    		 <c:set var="index" value="${index+1}" />
+										    	</c:forEach>
+										    	<br/>
+										  </c:forEach>
+										  
+									  </td>
+								 </tr>
+							<%-- </c:if> --%>
+							<%-- <c:if test="${recFile.dictFileSource == 'FILE_SOURCE_BGSNBSW' or recFile.dictFileSource == 'FILE_SOURCE_JZDWCB'}"> --%>
 							     <tr>
-						       		<td class="td-label">领导批示</td>
+						       		<td class="td-label">局领导批示</td>
 								  	<td class="td-value">
 								  	 		<textarea type="text"  id="leaderIns" name="leaderIns">${recFile.leaderIns}</textarea>
 								  </td>
 								 </tr>
-							 </c:if>
+								  <tr>
+						       		<td class="td-label">领导签批</td>
+								  	<td class="td-value">
+								  		 <input type="radio" name="directorOper" value="1" <c:if test="${recFile.directorOper==1 or empty recFile.directorOper}">  checked="checked"</c:if>>局长批示</input>
+										 <input type="radio" name="directorOper" value="2" <c:if test="${recFile.directorOper==2}">  checked="checked"</c:if>>局长圈阅</input>
+								  </td>
+								 </tr>
+							 <%-- </c:if> --%>
+							  <tr>
+					       		<td class="td-label">办理时效</td>
+							  	<td class="td-value">
+									   	   <input type="text" class="date" id="handlePres" name="handlePres"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${recFile.handlePres}" pattern="yyyy-MM-dd"/>"/>
+							  </td>
+							 </tr>
+							 <tr>
+					       		<td class="td-label">附件</td>
+							  	<td class="td-value">
+							  			<textarea type="text"  id="attachment" name="attachment">${recFile.attachment}</textarea>
+							  </td>
+							 </tr>
 						     <tr>
 					       		<td class="td-label">备注</td>
 							  	<td class="td-value">

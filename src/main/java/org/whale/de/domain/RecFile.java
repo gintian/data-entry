@@ -1,6 +1,5 @@
 package org.whale.de.domain;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import org.whale.system.domain.BaseEntry;
@@ -58,6 +57,9 @@ public class RecFile extends BaseEntry {
 	@Column(name="HANDLE_PRES", cnName="办理时效，如果选择了日期，则在超时后自动显示红色，同时用户可以手动点击已办结，然后不显示红色")
 	private Date handlePres; 
 	
+	@Column(name="IS_DISPATCH", cnName="是否急件：1是0否，")
+	private Integer isDispatch;
+	
 	@Column(name="IS_HANDLE", cnName="是否办结：1是0否，")
 	private Integer isHandle; 
 	
@@ -69,6 +71,15 @@ public class RecFile extends BaseEntry {
 	
 	@Column(name="LEADER_INS", cnName="领导批示")
 	private String leaderIns; 
+	
+	@Column(name="DIRECTOR_OPER", cnName="领导签批")
+	private Integer directorOper;
+	
+	@Column(name="SIGN_UP_STATUS", cnName="签收状态")
+	private Integer signUpStatus;
+	
+	@Column(name="ATTACHMENT", cnName="附件")
+	private String attachment;
 	
 	@Column(name="MEMO", cnName="备注")
 	private String memo; 
@@ -88,6 +99,13 @@ public class RecFile extends BaseEntry {
 	@Column(name="IS_VALID", cnName="删除状态位(1有效，0无效，作废的时候表示无效)")
 	private Integer isValid; 
 
+	public Integer getDirectorOper() {
+		return directorOper;
+	}
+
+	public void setDirectorOper(Integer directorOper) {
+		this.directorOper = directorOper;
+	}
 
 	/**主键*/
 	public Long getPkRecFile() {
@@ -295,6 +313,30 @@ public class RecFile extends BaseEntry {
 	/**删除状态位(1有效，0无效，作废的时候表示无效)*/
 	public void setIsValid(Integer isValid) {
 		this.isValid = isValid;
+	}
+
+	public Integer getIsDispatch() {
+		return isDispatch;
+	}
+
+	public void setIsDispatch(Integer isDispatch) {
+		this.isDispatch = isDispatch;
+	}
+
+	public Integer getSignUpStatus() {
+		return signUpStatus;
+	}
+
+	public void setSignUpStatus(Integer signUpStatus) {
+		this.signUpStatus = signUpStatus;
+	}
+
+	public String getAttachment() {
+		return attachment;
+	}
+
+	public void setAttachment(String attachment) {
+		this.attachment = attachment;
 	}
 
 }

@@ -25,7 +25,24 @@ $(function(){
 					<col width="10%"/>
 					<col width="90%"/>
 					<tbody>
-					
+							 <tr>
+					       		<td class="td-label">发文号</td>
+							  	<td class="td-value">
+									    	${item.sendNo}
+							  </td>
+							 </tr>
+							 <tr>
+					       		<td class="td-label">发文日期</td>
+							  	<td class="td-value">
+									   		<fmt:formatDate value="${item.sendDate}" pattern="yyyy-MM-dd"/>
+							  </td>
+							 </tr>
+							  <tr>
+					       		<td class="td-label">发送单位</td>
+							  	<td class="td-value">
+									    	${item.sendCompanys}
+							  </td>
+							 </tr>
 						     <tr>
 					       		<td class="td-label">文件类别</td>
 							  	<td class="td-value">
@@ -35,25 +52,7 @@ $(function(){
 						     <tr>
 					       		<td class="td-label">文件标题</td>
 							  	<td class="td-value">
-									    	${item.fileTitle}
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">发送单位</td>
-							  	<td class="td-value">
-									    	${item.sendCompanys}
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">发文日期</td>
-							  	<td class="td-value">
-									   		<fmt:formatDate value="${item.sendDate}" pattern="yyyy-MM-dd"/>
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">发文号</td>
-							  	<td class="td-value">
-									    	${item.sendNo}
+									    	<textarea type="text" readonly="readonly">${item.fileTitle}</textarea>
 							  </td>
 							 </tr>
 						     <tr>

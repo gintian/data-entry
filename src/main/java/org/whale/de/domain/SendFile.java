@@ -1,6 +1,5 @@
 package org.whale.de.domain;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import org.whale.system.domain.BaseEntry;
@@ -30,6 +29,9 @@ public class SendFile extends BaseEntry {
 	
 	@Column(name="SEND_COMPANYS", cnName="发送单位：存放机构单位主键，多个以，分隔")
 	private String sendCompanys; 
+	
+	@Column(name="SEND_COMPANYS_OTHER", cnName="发送单位：其他")
+	private String sendCompanysOther; 
 	
 	@Column(name="SEND_DATE", cnName="发文日期，格式yyyyMMdd")
 	private Date sendDate; 
@@ -199,6 +201,14 @@ public class SendFile extends BaseEntry {
 	/**删除状态位(1有效，0无效，作废的时候表示无效)*/
 	public void setIsValid(Integer isValid) {
 		this.isValid = isValid;
+	}
+
+	public String getSendCompanysOther() {
+		return sendCompanysOther;
+	}
+
+	public void setSendCompanysOther(String sendCompanysOther) {
+		this.sendCompanysOther = sendCompanysOther;
 	}
 
 }

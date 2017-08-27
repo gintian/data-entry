@@ -151,10 +151,13 @@ public class ExcelExportUtils<T> {
 	 * @param dataList
 	 * @return
 	 */
-	public HSSFWorkbook exportExcel(String sheetName, LinkedHashMap<String, ColumnHandlerComponent> titleMap, List<Map<String, Object>> dataList){
+	public HSSFWorkbook exportExcel(String sheetName, String sheetTopHeader, LinkedHashMap<String, ColumnHandlerComponent> titleMap, List<Map<String, Object>> dataList){
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		try {
 			HSSFSheet sheet = null;
+			
+			HSSFCellStyle topHeadStyle = workbook.createCellStyle();
+			topHeadStyle = ExcelStyle.setTopHeadStyle(workbook, topHeadStyle);
 			
 			HSSFCellStyle headStyle = workbook.createCellStyle();
 			headStyle = ExcelStyle.setHeadStyle(workbook, headStyle);
@@ -173,12 +176,25 @@ public class ExcelExportUtils<T> {
                     sheetNum = dataList.size() / ExportSettingContants.SHEET_DATA_NUM + 1;
                 }
             }
+            int sheetHearderFlag = 0;
+            if(StringUtils.isNotBlank(sheetTopHeader)){
+            	sheetHearderFlag = 1;
+            }
             // 遍历产生sheet
 			for (int s = 0; s < sheetNum; s++) {
 				sheet = workbook.createSheet(sheetName + "_" + s);
 				sheet.setDefaultColumnWidth(18); //设置默认列宽
+				// 判断是否加顶部表头
+				if(sheetHearderFlag == 1){
+					HSSFRow row = sheet.createRow(0);
+//					row.setHeightInPoints(50);
+					HSSFCell headerCell = row.createCell(0);
+					headerCell.setCellStyle(topHeadStyle);
+					headerCell.setCellValue(new HSSFRichTextString(sheetTopHeader));
+					sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titleMap.size()-1));
+				}
                 // 添加工作表标题
-    			HSSFRow row = sheet.createRow(0);
+    			HSSFRow row = sheet.createRow(0+sheetHearderFlag);
     			int i=0;
     			for (Iterator<String> it =  titleMap.keySet().iterator();it.hasNext();i++)
     			   {
@@ -195,7 +211,7 @@ public class ExcelExportUtils<T> {
     				if (sheetContentCount == dataList.size()) {
                         break;
                     }
-    				row = sheet.createRow(j + 1); //第一行为标题行, 从第二行开始写内容
+    				row = sheet.createRow(j + sheetHearderFlag + 1); //第一行为标题行, 从第二行开始写内容
     				Map<String, Object> rowList = dataList.get(j + ExportSettingContants.SHEET_DATA_NUM*s);
     				i=0;
     				for (Iterator<String> it =  titleMap.keySet().iterator();it.hasNext();i++) {
@@ -208,6 +224,7 @@ public class ExcelExportUtils<T> {
     						
     					}
     					HSSFCell cell = row.createCell(i);
+    					bodyStyle.setWrapText(true);  
     					cell.setCellStyle(bodyStyle);
     					
     					String textValue=(null==value)?"":value.toString();

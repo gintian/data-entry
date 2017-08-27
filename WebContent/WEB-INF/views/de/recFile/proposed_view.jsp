@@ -43,7 +43,7 @@
 <div class="panelBar" id="panelBarDiv"></div>
 <div class="infoBox" id="infoBoxDiv"></div>
 <div class="formwrap">
-	<span class="form-tag"><tag:dict dictCode="DICT_GRADE" id="dictGrade" value="${item.dictGrade}" readonly="true"></tag:dict></span>
+	<c:if test="${item.isDispatch==1}"><span class="form-tag">急件</span></c:if>
     <h1 class="form-head">福州市公安局文件批办单</h1>
     <ul class="form-subtitle">
         <li>
@@ -84,7 +84,7 @@
         </div>
         <c:if test="${not empty item.handlePres }">
         	<div class="form-row">
-	            <p class="form-content form-content-only">此文请于<span class="time"><fmt:formatDate value="${item.handlePres}" pattern="yyyy-MM-dd"/></span>日之前办结，请勿超期。</p>
+	            <p class="form-content form-content-only">此文请于<span class="time"><fmt:formatDate value="${item.handlePres}" pattern="yyyy-MM-dd"/></span>之前办结，请勿超期。</p>
 	        </div>
         </c:if>
     </div>

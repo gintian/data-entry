@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.whale.base.BaseController;
 import org.whale.base.DictUtil;
-import org.whale.base.TimeUtil;
+import org.whale.base.sequence.domain.SysSequence.SeqType;
+import org.whale.base.sequence.service.SysSequenceService;
 import org.whale.de.domain.SendFile;
 import org.whale.de.service.OrganizationService;
 import org.whale.de.service.SendFileService;
@@ -42,6 +43,8 @@ public class SendFileController extends BaseController {
 	private OrganizationService organizationService;
 	@Autowired
 	private DictCacheService dictCacheService;
+	@Autowired
+	SysSequenceService sysSequenceService;
 	
 	@RequestMapping("/goList")
 	public ModelAndView goList(HttpServletRequest request, HttpServletResponse response, SendFile sendFile){
@@ -59,8 +62,9 @@ public class SendFileController extends BaseController {
 	@RequestMapping("/goSave")
 	public ModelAndView goSave(HttpServletRequest request, HttpServletResponse response){
 		return new ModelAndView("de/sendFile/sendFile_edit")
-		.addObject("nextSendNo", String.format("SN%s", TimeUtil.getCurrDate("yyyyMMddHHmmssS")))
-		.addObject("organizationMap", organizationService.queryOrganizationMap());
+//		.addObject("nextSendNo", String.format("SN%s", TimeUtil.getCurrDate("yyyyMMddHHmmssS")))
+		.addObject("nextSendNo", sysSequenceService.doGetNextVal(SeqType.SEND_NO))
+		.addObject("organizationMap", organizationService.queryOrganizationMap(2, null));
 	}
 	
 	@RequestMapping("/goUpdate")
@@ -72,7 +76,7 @@ public class SendFileController extends BaseController {
 		
 		return new ModelAndView("de/sendFile/sendFile_edit")
 				.addObject("sendFile", sendFile)
-				.addObject("organizationMap", organizationService.queryOrganizationMap());
+				.addObject("organizationMap", organizationService.queryOrganizationMap(2, null));
 	}
 	
 	@RequestMapping("/goView")
@@ -124,7 +128,16 @@ public class SendFileController extends BaseController {
 		LinkedHashMap<String, ColumnHandlerComponent> titleMap=new LinkedHashMap<String, ColumnHandlerComponent>();
 		titleMap.put("SEND_NO", new ColumnHandlerComponent("发文号",null ));
 		titleMap.put("SEND_DATE", new ColumnHandlerComponent("发文日期",null ));
-		titleMap.put("SEND_COMPANYS", new ColumnHandlerComponent("发送单位",null));
+		titleMap.put("SEND_COMPANYS", new ColumnHandlerComponent("发送单位",new IColumnHandler() {
+			
+			@Override
+			public String handle(Object object, Map<String, Object> rowData) {
+				if(null == object){
+					return "";
+				}
+				return object.toString().replaceAll(",", "\n");
+			}
+		}));
 		titleMap.put("FILE_TITLE", new ColumnHandlerComponent("发文标题",null ));
 		titleMap.put("FILE_CODE", new ColumnHandlerComponent("文号", null));
 		titleMap.put("DICT_DENSE",new ColumnHandlerComponent("密级",new IColumnHandler() {
@@ -137,6 +150,21 @@ public class SendFileController extends BaseController {
 					else return "";
 				}
 			}));
+		titleMap.put("DENSE_CODE",new ColumnHandlerComponent("密级编号",new IColumnHandler() {
+			
+			@Override
+			public String handle(Object object, Map<String, Object> rowData) {
+				if(object == null || "".equals(object.toString())){
+					return "";
+				}
+				int dcCnt = Integer.parseInt(object.toString());
+				String outDenseCode = "";
+				for(int i=1; i<=dcCnt; i++){
+					outDenseCode = outDenseCode + i + "\n";
+				}
+				return outDenseCode.substring(0, outDenseCode.length()-1);
+			}
+		}));
         titleMap.put("DE_SIGN_UP",new ColumnHandlerComponent("签收人",null));
 		
 		Page page=super.newPage(request);
@@ -145,7 +173,7 @@ public class SendFileController extends BaseController {
 		Map<String, String> paramMap=this.getParamMap(request);
 		this.sendFileService.querySendFilePage(page, paramMap);
 		String fileName=page.getTotalNum()>ExcelConstant.MAX_EXPORT_PAGE_SIZE?"发文记录(Warn:超出"+ExcelConstant.MAX_EXPORT_PAGE_SIZE+"部分被忽略)"+".xls":"发文记录.xls";
-		ExcelWebUtil.flushExcelOutputStream(request, response, titleMap, page.getDatas(), fileName, "发文记录");
+		ExcelWebUtil.flushExcelOutputStream(request, response, "福州市公安局发文签收单", titleMap, page.getDatas(), fileName, "发文记录");
 	}
 
 }

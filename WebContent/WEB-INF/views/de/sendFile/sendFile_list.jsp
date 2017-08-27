@@ -77,11 +77,17 @@ function doExcel(){
 										   	   <input type="text"  name="FILE_TITLE" style="width:160px;" value="${paramMap.FILE_TITLE}" />
 								  </td>
 								 </tr>
-							     <tr>
+								 <tr>
+								 	<td class="td-label">文号</td> 
+								  	<td class="td-value">
+										   	   <input type="text"  name="FILE_CODE" style="width:160px;" value="${paramMap.FILE_CODE}" />
+								  </td>
 								 	<td class="td-label">发文日期</td> 
 								  	<td class="td-value">
 										   	   <input type="text"  name="SEND_DATE" style="width:160px;" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="${paramMap.SEND_DATE}"/>
 								  </td>
+								 </tr>
+							     <tr>
 								 	<td class="td-label">密级</td> 
 								  	<td class="td-value">
 											   <tag:dict id="DICT_DENSE" dictCode="DICT_DENSE" headerLabel="--请选择--" value="${paramMap.DICT_DENSE}"></tag:dict>
@@ -131,14 +137,14 @@ function doExcel(){
 					<col width="3%"/>
 					<col width="3%"/>
 					<col width="8%"/>
-					<col width="8%"/>
 					<col width="12%"/>
+					<col width="8%"/>
 					<col/>
 					<col width="6%"/>
-					<col width="12%"/>
+					<col width="18%"/>
 					<col width="8%"/>
 					<col width="6%"/>
-					<!-- <col width="8%"/> -->
+					<col width="8%"/>
 					<thead>
 						<tr>
 							<th>
@@ -151,19 +157,19 @@ function doExcel(){
 									操作
 								</th>
 								<th>
-									文件类别
-								</th>
-								<th>
-									文件标题
-								</th>
-								<th>
-									发送单位
+									发文号
 								</th>
 								<th>
 									发文日期
 								</th>
 								<th>
-									发文号
+									发送单位
+								</th>
+								<th>
+									文件类别
+								</th>
+								<th>
+									文件标题
 								</th>
 								<th>
 									文号
@@ -174,6 +180,9 @@ function doExcel(){
 								<!-- <th>
 									密级编号
 								</th> -->
+								<th>
+									修改用户
+								</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -194,30 +203,33 @@ function doExcel(){
 												查看
 										</a>
 									</td>
-										<td title="">
+										<td title="${item.SEND_NO}" class="td-center">
+													${item.SEND_NO} 
+										</td>
+										<td title="${item.SEND_DATE}" class="td-center">
+													<fmt:formatDate value='${item.SEND_DATE}' pattern='yyyy-MM-dd'/>
+										</td>
+										<td title="${item.SEND_COMPANYS}" class="td-center">
+													${item.SEND_COMPANYS} 
+										</td>
+										<td title="" class="td-center">
 													<tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY" readonly="true" value="${item.DICT_FILE_CATEGORY}"></tag:dict>
 										</td>
 										<td title="${item.FILE_TITLE}">
 													${item.FILE_TITLE} 
 										</td>
-										<td title="${item.SEND_COMPANYS}">
-													${item.SEND_COMPANYS} 
-										</td>
-										<td title="${item.SEND_DATE}">
-													<fmt:formatDate value='${item.SEND_DATE}' pattern='yyyy-MM-dd'/>
-										</td>
-										<td title="${item.SEND_NO}">
-													${item.SEND_NO} 
-										</td>
-										<td title="${item.FILE_CODE}">
+										<td title="${item.FILE_CODE}" class="td-center">
 													${item.FILE_CODE} 
 										</td>
-										<td title="">
+										<td title="" class="td-center">
 													<tag:dict id="dictDense" dictCode="DICT_DENSE" readonly="true" value="${item.DICT_DENSE}"></tag:dict>
 										</td>
 										<%-- <td title="${item.DENSE_CODE}">
 													${item.DENSE_CODE} 
 										</td> --%>
+										<td title="${item.userName}" class="td-center">
+													${item.userName} 
+										</td>
 						</tr>
 						</c:forEach>
 					</tbody>

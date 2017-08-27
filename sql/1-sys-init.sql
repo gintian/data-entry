@@ -2725,3 +2725,27 @@ INSERT INTO sys_city
    (`ID`, `ORDERID`, `NAME`, `PID`, `PHONE_CODE`)
 VALUES
    (391, 1, '香港特别行政区', 34, NULL);
+
+
+/*==============================================================*/
+/* Table: SYS_SEQUENCE                                      */
+/*==============================================================*/
+drop table if exists SYS_SEQUENCE;
+   
+create table SYS_SEQUENCE
+(
+   PK_SYS_SEQUENCE     int not null auto_increment comment 'PK_SYS_SEQUENCE',
+   CUR_DATE				date not null comment '当前日期',
+   CURRENT_VALUE        int not null comment '当前值',
+   SEQ_TYPE             tinyint not null comment '序列类型（1收文号序列，2发文号序列）',
+   CACHED_SIZE          int comment '缓存大小',
+   REMARKS              varchar(24) comment '备注',
+   primary key (PK_SYS_SEQUENCE)
+)
+ENGINE = InnoDB
+DEFAULT CHARSET = utf8;
+
+alter table SYS_SEQUENCE comment '基础序列表';
+
+INSERT INTO SYS_SEQUENCE(CUR_DATE,CURRENT_VALUE,SEQ_TYPE,CACHED_SIZE,REMARKS) VALUES (CURDATE(),0,1,0,'收文号序列');
+INSERT INTO SYS_SEQUENCE(CUR_DATE,CURRENT_VALUE,SEQ_TYPE,CACHED_SIZE,REMARKS) VALUES (CURDATE(),0,2,0,'发文号序列');

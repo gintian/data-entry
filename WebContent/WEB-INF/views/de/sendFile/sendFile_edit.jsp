@@ -34,6 +34,16 @@ function save(actionBtn){
 	
 	if(!dataForm.valid()) {toolBar.enableBut(actionBtn);return false;}
 	
+	var dictDenseVal = $("#dictDense").val();
+	if(dictDenseVal == 'DENSE_MM' || dictDenseVal == 'DENSE_JIM' || dictDenseVal == 'DENSE_JUEM'){
+		var sendCompanysCnt = $('input[name="organization"]:checked').length + ($('#sendCompanysOther').val() ? 1 : 0);
+		var denseCodeCnt = parseInt($('#denseCode').val());
+		if(sendCompanysCnt != denseCodeCnt){
+			$.alert("密级编号填写有误，请核查发送单位");
+			toolBar.enableBut(actionBtn);return false;
+		}
+	}
+	
 	// 处理发送单位sendCompanys
 	var sendCompanysId = [];
 	$('input[name="organization"]:checked').each(function(){
@@ -55,6 +65,10 @@ function save(actionBtn){
 	},function(obj){
 		toolBar.enableBut(actionBtn);
 	});
+}
+
+function checkAll(obj, str){
+	$(':checkbox[oc="'+ str +'"]').prop('checked', obj.checked);
 }
 
 //校验函数
@@ -90,6 +104,9 @@ $(function() {
 			},
 			'dictDense':{
 				required: true
+			},
+			'denseCode':{
+				number:true
 			}
 	}
 	
@@ -127,6 +144,38 @@ $(function() {
 					<col width="10%"/>
 					<col width="90%"/>
 					<tbody>
+							<tr>
+					       		<td class="td-label">发文号</td>
+							  	<td class="td-value">
+									 <input type="text"  id="sendNo" name="sendNo" value="<c:choose><c:when test="${empty sendFile.sendNo}">${nextSendNo}</c:when><c:otherwise>${sendFile.sendNo}</c:otherwise></c:choose>" readonly="readonly"/>
+									   	   
+							  </td>
+							 </tr>
+							 <tr>
+					       		<td class="td-label">发文日期</td>
+							  	<td class="td-value">
+									   	   <input type="text" class="date" id="sendDate" name="sendDate"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${sendFile.sendDate}" pattern="yyyy-MM-dd"/>"/>
+							  </td>
+							 </tr>
+							  <tr>
+					       		<td class="td-label">发送单位</td>
+							  	<td class="td-value">
+									   	  <input type="hidden" id="sendCompanys" name="sendCompanys" value="${sendFile.sendCompanys}" />
+									   	  <c:set var= "scArr" value=""></c:set>
+									   	  <c:if test="${not empty sendFile.sendCompanys }">
+									   	  		<c:set var= "scArr" value="${fn:split(sendFile.sendCompanys,',')}"></c:set>
+									   	  </c:if>
+									   	  <c:forEach items="${organizationMap}" var="map" varStatus="status">
+												<tag:dict id="dictOrgCategory" dictCode="DICT_ORG_CATEGORY" readonly="true" value="${map.key}"></tag:dict>：<input type="checkbox" onclick="checkAll(this, '${map.key}')" />全部&nbsp;&nbsp;&nbsp;&nbsp;
+										    	<c:forEach items="${map.value}" var="org">
+										    		 <input type="checkbox" name="organization" oc="${map.key}" value="${org.pkOrganization}" <c:forEach var="sc" items="${scArr }" begin="0" end="${fn:length(scArr)}"><c:if test="${sc == org.pkOrganization }">checked="checked"</c:if></c:forEach>>${org.orgCompany}</input>&nbsp;&nbsp;&nbsp;&nbsp;
+										    	</c:forEach>
+										    	<br/><br/>
+										    	<%-- <c:if test="${!(fn:length(organizationMap)==status.index+1)}"><br/><br/></c:if> --%>
+										  </c:forEach>
+										  其他：<input type="text" id="sendCompanysOther" name="sendCompanysOther" value="${sendFile.sendCompanysOther}"/>
+							  </td>
+							 </tr>
 						     <tr>
 					       		<td class="td-label">文件类别</td>
 							  	<td class="td-value">
@@ -136,36 +185,7 @@ $(function() {
 						     <tr>
 					       		<td class="td-label">文件标题</td>
 							  	<td class="td-value">
-									   	   <input type="text"  id="fileTitle" name="fileTitle" value="${sendFile.fileTitle}" />
-							  </td>
-							 </tr>
-							  <tr>
-					       		<td class="td-label">发文日期</td>
-							  	<td class="td-value">
-									   	   <input type="text" class="date" id="sendDate" name="sendDate"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${sendFile.sendDate}" pattern="yyyy-MM-dd"/>"/>
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">发送单位</td>
-							  	<td class="td-value">
-									   	  <input type="hidden" id="sendCompanys" name="sendCompanys" value="${sendFile.sendCompanys}" />
-									   	  <c:set var= "scArr" value=""></c:set>
-									   	  <c:if test="${not empty sendFile.sendCompanys }">
-									   	  		<c:set var= "scArr" value="${fn:split(sendFile.sendCompanys,',')}"></c:set>
-									   	  </c:if>
-									   	  <c:forEach items="${organizationMap}" var="map">
-												${map.key}<br/>
-										    	<c:forEach items="${map.value}" var="org">
-										    		 <input type="checkbox" name="organization" value="${org.pkOrganization}" <c:forEach var="sc" items="${scArr }" begin="0" end="${fn:length(scArr)}"><c:if test="${sc == org.pkOrganization }">checked="checked"</c:if></c:forEach>>${org.orgCompany}</input>&nbsp;&nbsp;&nbsp;&nbsp;
-										    	</c:forEach><br/>
-										  </c:forEach>
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">发文号</td>
-							  	<td class="td-value">
-									 <input type="text"  id="sendNo" name="sendNo" value="<c:choose><c:when test="${empty sendFile.sendNo}">${nextSendNo}</c:when><c:otherwise>${sendFile.sendNo}</c:otherwise></c:choose>" readonly="readonly"/>
-									   	   
+							  			<textarea type="text"  id="fileTitle" name="fileTitle">${sendFile.fileTitle}</textarea>
 							  </td>
 							 </tr>
 						     <tr>

@@ -168,7 +168,7 @@ public class ExcelWebUtil extends WebUtil {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("all")
-	public static void flushExcelOutputStream(HttpServletRequest request, HttpServletResponse response,LinkedHashMap<String,ColumnHandlerComponent> titleMap, List<Map<String,Object>> dataList, String fileName, String sheetName) throws Exception{
+	public static void flushExcelOutputStream(HttpServletRequest request, HttpServletResponse response,String sheetTopHeader,LinkedHashMap<String,ColumnHandlerComponent> titleMap, List<Map<String,Object>> dataList, String fileName, String sheetName) throws Exception{
 		fileName = Strings.isBlank(fileName) ? UUID.randomUUID().toString() + ".xls" : fileName;
 		if(UserContextUtil.getUserContext()!=null && request!=null )
 			logger.info("开始 导出数据到文件["+fileName+"],数据量["+dataList.size()+"],操作用户["+UserContextUtil.getUserContext().getUserName()+"],请求源["+request.getHeader("referer")+"]。");
@@ -177,7 +177,7 @@ public class ExcelWebUtil extends WebUtil {
 		setDisableCacheHeader(response);
 		ServletOutputStream out = null;
 		try {
-			HSSFWorkbook workbook = new ExcelExportUtils().exportExcel(sheetName, titleMap, dataList);
+			HSSFWorkbook workbook = new ExcelExportUtils().exportExcel(sheetName, sheetTopHeader, titleMap, dataList);
 			out = response.getOutputStream();
 			workbook.write(out);
 			out.flush();

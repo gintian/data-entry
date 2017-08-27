@@ -16,8 +16,8 @@ import org.whale.system.dao.Page;
 public class SendFileDao extends BaseDao<SendFile, Long> {
 
 	public void querySendFilePage(Page page,Map<String, String> paramMap) {
-		StringBuilder sql = new StringBuilder("SELECT t.PK_SEND_FILE, t.DICT_FILE_CATEGORY, t.FILE_TITLE, t.SEND_DATE, t.SEND_NO, t.FILE_CODE, t.DICT_DENSE, t.DENSE_CODE, t.MEMO, 1 as DE_SIGN_UP"
-				+ ", case when t.send_companys is not null then (SELECT GROUP_CONCAT(ORG_COMPANY SEPARATOR ',') FROM de_organization WHERE FIND_IN_SET(PK_ORGANIZATION, t.send_companys)) end as send_companys FROM DE_SEND_FILE t where 1=1 ");
+		StringBuilder sql = new StringBuilder("SELECT s.userName, t.PK_SEND_FILE, t.DICT_FILE_CATEGORY, t.FILE_TITLE,t.SEND_COMPANYS_OTHER, t.SEND_DATE, t.SEND_NO, t.FILE_CODE, t.DICT_DENSE, t.DENSE_CODE, t.MEMO, t.DENSE_CODE as DE_SIGN_UP"
+				+ ", CONCAT(CASE WHEN t.send_companys IS NOT NULL THEN (SELECT GROUP_CONCAT(ORG_COMPANY SEPARATOR ',') FROM de_organization WHERE FIND_IN_SET(PK_ORGANIZATION,t.send_companys)) END, \",\", t.send_companys_other) AS send_companys  FROM DE_SEND_FILE t inner join sys_user s on s.userId = t.update_by_id where 1=1 ");
 		
 		if(paramMap != null && paramMap.size() > 0 ){
 			String DICT_FILE_CATEGORY = paramMap.get("DICT_FILE_CATEGORY");
@@ -29,6 +29,11 @@ public class SendFileDao extends BaseDao<SendFile, Long> {
 			if(Strings.isNotBlank(FILE_TITLE)){
 				sql.append("and t.FILE_TITLE like ? ");
 				page.addArg("%" + FILE_TITLE.trim() + "%");
+			}
+			String FILE_CODE = paramMap.get("FILE_CODE");
+			if(Strings.isNotBlank(FILE_CODE)){
+				sql.append("and t.FILE_CODE like ? ");
+				page.addArg("%" + FILE_CODE.trim() + "%");
 			}
 			String SEND_DATE = paramMap.get("SEND_DATE");
 			if(Strings.isNotBlank(SEND_DATE)){
@@ -47,8 +52,8 @@ public class SendFileDao extends BaseDao<SendFile, Long> {
 	}
 	
 	public SendFile getById(Long id){
-		StringBuilder sql = new StringBuilder("SELECT t.PK_SEND_FILE, t.DICT_FILE_CATEGORY, t.FILE_TITLE, t.SEND_DATE, t.SEND_NO, t.FILE_CODE, t.DICT_DENSE, t.DENSE_CODE, t.MEMO, t.CREATE_BY_ID, t.CREATE_BY_TIME, t.UPDATE_BY_ID, t.UPDATE_BY_TIME, t.IS_VALID"
-				+ ", case when t.send_companys is not null then (SELECT GROUP_CONCAT(ORG_COMPANY SEPARATOR ',') FROM de_organization WHERE FIND_IN_SET(PK_ORGANIZATION, t.send_companys)) end as send_companys FROM DE_SEND_FILE t "
+		StringBuilder sql = new StringBuilder("SELECT t.PK_SEND_FILE, t.SEND_COMPANYS_OTHER, t.DICT_FILE_CATEGORY, t.FILE_TITLE, t.SEND_DATE, t.SEND_NO, t.FILE_CODE, t.DICT_DENSE, t.DENSE_CODE, t.MEMO, t.CREATE_BY_ID, t.CREATE_BY_TIME, t.UPDATE_BY_ID, t.UPDATE_BY_TIME, t.IS_VALID"
+				+ ", CONCAT(CASE WHEN t.send_companys IS NOT NULL THEN (SELECT GROUP_CONCAT(ORG_COMPANY SEPARATOR ',') FROM de_organization WHERE FIND_IN_SET(PK_ORGANIZATION,t.send_companys)) END, \",\", t.send_companys_other) AS send_companys FROM DE_SEND_FILE t "
 				+ " where 1=1 "
 				+ " and t.PK_SEND_FILE = ?");
 		

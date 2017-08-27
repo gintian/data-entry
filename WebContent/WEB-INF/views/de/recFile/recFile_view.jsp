@@ -32,40 +32,40 @@ $(function(){
 											<tag:dict dictCode="DICT_FILE_SOURCE" id="dictFileSource" value="${item.dictFileSource}" readonly="true"></tag:dict>
 							  </td>
 							 </tr> --%>
-						     <tr>
-					       		<td class="td-label">文件类别</td>
+							  <tr>
+					       		<td class="td-label">收文号</td>
 							  	<td class="td-value">
-											<tag:dict dictCode="DICT_FILE_CATEGORY" id="dictFileCategory" value="${item.dictFileCategory}" readonly="true"></tag:dict>
+									    	${item.recNo}
 							  </td>
 							 </tr>
-						     <tr>
+							 <tr>
+					       		<td class="td-label">收文日期</td>
+							  	<td class="td-value">
+									   		<fmt:formatDate value="${item.recDate}" pattern="yyyy-MM-dd"/>
+							  </td>
+							 </tr>
+							  <tr>
 					       		<td class="td-label">来文单位</td>
 							  	<td class="td-value">
 											<tag:dict dictCode="DICT_REC_COMPANY" id="dictRecCompany" value="${item.dictRecCompany}" readonly="true"></tag:dict>
 							  </td>
 							 </tr>
 						     <tr>
-					       		<td class="td-label">收文日期</td>
+					       		<td class="td-label">文件类别</td>
 							  	<td class="td-value">
-									   		<fmt:formatDate value="${item.recDate}" pattern="yyyy-MM-dd"/>
+											<tag:dict dictCode="DICT_FILE_CATEGORY" id="dictFileCategory" value="${item.dictFileCategory}" readonly="true"></tag:dict>
 							  </td>
 							 </tr>
-						     <tr>
-					       		<td class="td-label">收文号</td>
+							  <tr>
+					       		<td class="td-label">文件标题</td>
 							  	<td class="td-value">
-									    	${item.recNo}
+									    	 <textarea type="text"  id="fileTitle" name="fileTitle" readonly="readonly">${item.fileTitle}</textarea>
 							  </td>
 							 </tr>
 						     <tr>
 					       		<td class="td-label">文号</td>
 							  	<td class="td-value">
 									    	${item.fileCode}
-							  </td>
-							 </tr>
-						     <tr>
-					       		<td class="td-label">文件标题</td>
-							  	<td class="td-value">
-									    	${item.fileTitle}
 							  </td>
 							 </tr>
 						     <tr>
@@ -92,10 +92,11 @@ $(function(){
 									    	${item.fileCnt}
 							  </td>
 							 </tr>
-						     <tr>
-					       		<td class="td-label">办理时效</td>
+							 <tr>
+					       		<td class="td-label">是否急件</td>
 							  	<td class="td-value">
-									   		<fmt:formatDate value="${item.handlePres}" pattern="yyyy-MM-dd"/>
+									   	    <input type="radio" name="isDispatch" disabled="disabled" value="1" <c:if test="${item.isDispatch==1 or empty item.isDispatch}">  checked="checked"</c:if>>是</input>
+										 <input type="radio" name="isDispatch" disabled="disabled" value="0" <c:if test="${item.isDispatch==0}">  checked="checked"</c:if>>否</input>
 							  </td>
 							 </tr>
 						    <%--  <tr>
@@ -104,7 +105,7 @@ $(function(){
 									    	${item.isHandle}
 							  </td>
 							 </tr> --%>
-							  <c:if  test="${recFile.dictFileSource == 'FILE_SOURCE_GAXT' or recFile.dictFileSource == 'FILE_SOURCE_WBXT'}">
+							  <%-- <c:if  test="${recFile.dictFileSource == 'FILE_SOURCE_GAXT' or recFile.dictFileSource == 'FILE_SOURCE_WBXT'}"> --%>
 							     <tr>
 						       		<td class="td-label">是否拟办</td>
 								  	<td class="td-value">
@@ -118,15 +119,34 @@ $(function(){
 								  		 <textarea type="text"  id="proposedComments" name="proposedComments" readonly="readonly">${item.proposedComments}</textarea>
 								  </td>
 								 </tr>
-							 </c:if>
-							 <c:if test="${recFile.dictFileSource == 'FILE_SOURCE_BGSNBSW' or recFile.dictFileSource == 'FILE_SOURCE_JZDWCB'}">
+							 <%-- </c:if> --%>
+							 <%-- <c:if test="${recFile.dictFileSource == 'FILE_SOURCE_BGSNBSW' or recFile.dictFileSource == 'FILE_SOURCE_JZDWCB'}"> --%>
 							     <tr>
-						       		<td class="td-label">领导批示</td>
+						       		<td class="td-label">局领导批示</td>
 								  	<td class="td-value">
 								  	 <textarea type="text"  id="proposedComments" name="proposedComments" readonly="readonly">${item.leaderIns}</textarea>
 								  </td>
 								 </tr>
-							 </c:if>
+								 <tr>
+						       		<td class="td-label">领导签批</td>
+								  	<td class="td-value">
+								  		 <input type="radio" disabled="disabled" name="directorOper" value="1" <c:if test="${item.directorOper==1 or empty item.directorOper}">  checked="checked"</c:if>>局长批示</input>
+										 <input type="radio" disabled="disabled" name="directorOper" value="2" <c:if test="${item.directorOper==2}">  checked="checked"</c:if>>局长圈阅</input>
+								  </td>
+								 </tr>
+							 <%-- </c:if> --%>
+							   <tr>
+					       		<td class="td-label">办理时效</td>
+							  	<td class="td-value">
+									   		<fmt:formatDate value="${item.handlePres}" pattern="yyyy-MM-dd"/>
+							  </td>
+							 </tr>
+							  <tr>
+					       		<td class="td-label">附件</td>
+							  	<td class="td-value">
+							  			<textarea type="text"  id="attachment" name="attachment" readonly="readonly">${item.attachment}</textarea>
+							  </td>
+							 </tr>
 						     <tr>
 					       		<td class="td-label">备注</td>
 							  	<td class="td-value">
