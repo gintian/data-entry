@@ -6,6 +6,8 @@
 <%@include file="/html/jsp/common.jsp" %>
 <link href="${ctx}/html/css/flowPage.css" rel="stylesheet" />
 <script src="${ctx}/html/js/flowPage.js" type="text/javascript"></script>
+<link rel="stylesheet" href="${resource}/jquery-ui-autocomplete/jquery-ui.min.css">
+<script type="text/javascript" src="${resource}/jquery-ui-autocomplete/jquery-ui.min.js"></script>
 <script language="javascript">
 $(function(){
 	new ToolBar({items:[
@@ -49,9 +51,50 @@ function save(actionBtn){
 	});
 }
 
+function checkAll(checkboxEle, flag){
+	$("#signTr").find("input[type='checkbox'][pid='"+flag+"']").each(
+		function() {
+			this.checked = $(checkboxEle).attr("checked");
+	});
+}
+
 //校验函数
 $(function() {
 	//1.初始化控件事件
+	var ajaxDefaultSetting = {
+	        type: 'post',
+	        dataType: 'json',
+	        cache: false
+	    };
+	var queryUrl="${ctx}/de/recFile/queryRecCompanys";
+	var DICT_REC_COMPANY=$('#dictRecCompany');
+	DICT_REC_COMPANY.autocomplete({
+      	delay:300,
+        source: function(request, response){
+          var setting = {
+                    url:queryUrl,
+                    data:{
+                      	'dictRecCompany':DICT_REC_COMPANY.val()
+                    },
+                    success: function(obj){
+                      	response(obj.datas);
+                    }
+                };
+                $.extend(setting, ajaxDefaultSetting);
+                $.ajax(setting);
+        },
+        select:function(event, ui){
+          DICT_REC_COMPANY.val(ui.item.DICT_REC_COMPANY);
+          return false;
+        }
+      }).focus(function () {
+          $(this).autocomplete("search");
+      }).autocomplete( "instance" )._renderItem = function( ul, item ) {
+        return $( "<li>" )
+          .append( "<div style='width:147px'>" + item.DICT_REC_COMPANY + "</div>" )
+          .appendTo( ul );
+      };
+	
 	
 	//2.联动控件事件
 	
@@ -101,8 +144,10 @@ $(function() {
 		var _this = $(this);
 		var _val = _this.val();
 		if(_val == 0){
+			$('#proposedDateTr').hide();
 			$('#proposedCommentsTr').hide();
 		}else if(_val == 1){
+			$('#proposedDateTr').show();
 			$('#proposedCommentsTr').show();
 		}
 	});
@@ -130,10 +175,13 @@ $(function() {
 	
 	<c:forEach var="rfSign" items="${rfSigns}">
 		$(':checkbox[value="${rfSign.fkOrganization}"]',signTr).attr('checked','checked')
-				.next('input').val('${rfSign.signUpOther}')
+				.next().children('input').val('${rfSign.signUpOther}')
+				.parent()
 				.next('input').val('${rfSign.signUp}')
-				.next('input').val('<fmt:formatDate value="${rfSign.signTime}" pattern="yyyy-MM-dd HH:mm:ss"/>');
-	</c:forEach> 
+				.next('input').val('<fmt:formatDate value="${rfSign.signTime}" pattern="yyyy-MM-dd"/>')
+				.next('input').val('${rfSign.signUp2}')
+				.next('input').val('<fmt:formatDate value="${rfSign.signTime2}" pattern="yyyy-MM-dd"/>');;
+	</c:forEach>
 });
 
 </script>
@@ -176,19 +224,25 @@ $(function() {
 							 <tr>
 					       		<td class="td-label">来文单位</td>
 							  	<td class="td-value">
-										   <tag:dict id="dictRecCompany" dictCode="DICT_REC_COMPANY" headerLabel="--请选择--" value="${recFile.dictRecCompany}"></tag:dict>
+										   <%-- <tag:dict id="dictRecCompany" dictCode="DICT_REC_COMPANY" headerLabel="--请选择--" value="${recFile.dictRecCompany}"></tag:dict> --%>
+										   <input type="text"  id="dictRecCompany" name="dictRecCompany" value="${recFile.dictRecCompany}" />
 							  </td>
 							 </tr>
 						     <tr>
 					       		<td class="td-label">文件类别</td>
 							  	<td class="td-value">
-										   <tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY" headerLabel="--请选择--" value="${recFile.dictFileCategory}"></tag:dict>
+							  			<c:if test="${isDense }">
+							  				<tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY" headerLabel="--请选择--" value="${recFile.dictFileCategory}"></tag:dict>
+							  			</c:if>
+										<c:if test="${empty isDense or !isDense}">
+							  				<tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY_OPT" headerLabel="--请选择--" value="${recFile.dictFileCategory}"></tag:dict>
+							  			</c:if>
 							  </td>
 							 </tr>
 						     <tr>
 					       		<td class="td-label">文件标题</td>
 							  	<td class="td-value">
-							  				 <textarea type="text"  id="fileTitle" name="fileTitle">${recFile.fileTitle}</textarea>
+							  				 <textarea type="text"  id="fileTitle" name="fileTitle" style="font-size:14px;">${recFile.fileTitle}</textarea>
 							  </td>
 							 </tr>
 						     <tr>
@@ -200,7 +254,12 @@ $(function() {
 						     <tr>
 					       		<td class="td-label">密级</td>
 							  	<td class="td-value">
-										   <tag:dict id="dictDense" dictCode="DICT_DENSE" headerLabel="--请选择--" value="${recFile.dictDense}"></tag:dict>
+							  			<c:if test="${isDense }">
+							  				<tag:dict id="dictDense" dictCode="DICT_DENSE" headerLabel="--请选择--" value="${recFile.dictDense}"></tag:dict>
+							  			</c:if>
+										<c:if test="${empty isDense or !isDense}">
+							  				<tag:dict id="dictDense" dictCode="DICT_DENSE_OPT" headerLabel="--请选择--" value="${recFile.dictDense}"></tag:dict>
+							  			</c:if>
 							  </td>
 							 </tr>
 						     <tr id="denseCodeTr" <c:if test="${empty recFile.dictDense or recFile.dictDense=='DENSE_FM' or recFile.dictDense=='DENSE_NBWJ' }">style="display: none"</c:if>>
@@ -228,12 +287,13 @@ $(function() {
 										 <input type="radio" name="isDispatch" value="0" <c:if test="${recFile.isDispatch==0}">  checked="checked"</c:if>>否</input>
 							  </td>
 							 </tr>
-						     <%-- <tr>
-					       		<td class="td-label">是否办结</td>
+						     <tr>
+					       		<td class="td-label">是否需办理反馈</td>
 							  	<td class="td-value">
-									   	   <input type="text"  id="isHandle" name="isHandle" value="${recFile.isHandle}" />
+									   	  <input type="radio" name="isNeedFeedback" value="1" <c:if test="${recFile.isNeedFeedback==1}">  checked="checked"</c:if>>是</input>
+										 <input type="radio" name="isNeedFeedback" value="0" <c:if test="${recFile.isNeedFeedback==0 or empty recFile.isNeedFeedback}">  checked="checked"</c:if>>否</input>
 							  </td>
-							 </tr> --%>
+							 </tr>
 							 <%-- <c:if  test="${recFile.dictFileSource == 'FILE_SOURCE_GAXT' or recFile.dictFileSource == 'FILE_SOURCE_WBXT'}"> --%>
 							     <tr>
 						       		<td class="td-label">是否拟办</td>
@@ -242,23 +302,33 @@ $(function() {
 										 <input type="radio" name="isProposed" value="0" <c:if test="${recFile.isProposed==0}">  checked="checked"</c:if>>否</input>
 								  </td>
 								 </tr>
-							     <tr id="proposedCommentsTr">
+								 <tr id="proposedDateTr" <c:if test="${recFile.isProposed==0}">style="display: none"</c:if>>
+						       		<td class="td-label">拟办落款日期</td>
+								  	<td class="td-value">
+								  			<input type="text" class="date" id="proposedDate" name="proposedDate"  onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="<fmt:formatDate value="${recFile.proposedDate}" pattern="yyyy-MM-dd"/>"/>
+								  	</td>
+								 </tr>
+							     <tr id="proposedCommentsTr" <c:if test="${recFile.isProposed==0}">style="display: none"</c:if>>
 						       		<td class="td-label">拟办意见</td>
 								  	<td class="td-value">
 								  			 <textarea type="text"  id="proposedComments" name="proposedComments">${recFile.proposedComments}</textarea>
-								  </td>
+								  	</td>
 								 </tr>
-								 <tr id="signTr">
+								 <tr id="signTr" style="display:none">
 									  <td class="td-label">签收单位</td>
 									  <td class="td-value">
 									  	  <c:set var="index" value="0"></c:set>
 									   	  <c:forEach items="${organizationMap}" var="map">
 									   	  		<tag:dict id="dictOrgCategory" dictCode="DICT_ORG_CATEGORY" readonly="true" value="${map.key}"></tag:dict>：<br/>
+									   	  		<c:if test="${map.key != 'ORG_CATEGORY_QT'}">
+									   	  			<input type="checkbox" onclick="checkAll(this, '${map.key}')" />全部<br/>
+									   	  		</c:if>
 										    	<c:forEach items="${map.value}" var="org">
-										    		 <input type="checkbox" name="recFileSigns[${index}].fkOrganization" value="${org.pkOrganization}">${org.orgCompany}</input>
-										    		 <input type="text" name="recFileSigns[${index}].signUpOther" <c:if test="${map.key != 'ORG_CATEGORY_QT'}">style="display:none"</c:if>/>&nbsp;&nbsp;
+										    		 <input type="checkbox" pid="${map.key}" name="recFileSigns[${index}].fkOrganization" value="${org.pkOrganization}"/><span style="width:180px;text-align:left;display:inline-block;">${org.orgCompany}&nbsp;&nbsp;<input type="text" name="recFileSigns[${index}].signUpOther" style="width:100px;<c:if test="${map.key != 'ORG_CATEGORY_QT'}">display:none</c:if>"/></span>
 										    		 签收人：<input type="text" name="recFileSigns[${index}].signUp" style="width:100px;height:initial"></input>&nbsp;&nbsp;
-										    		 签收时间： <input type="text" class="date" name="recFileSigns[${index}].signTime" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:120px;height:initial"/>
+										    		 签收时间： <input type="text" class="date" name="recFileSigns[${index}].signTime" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" style="width:120px;height:initial"/>&nbsp;&nbsp;
+										    		 签收人：<input type="text" name="recFileSigns[${index}].signUp2" style="width:100px;height:initial"></input>&nbsp;&nbsp;
+										    		 签收时间： <input type="text" class="date" name="recFileSigns[${index}].signTime2" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" style="width:120px;height:initial"/>
 										    		 <br/>
 										    		 <c:set var="index" value="${index+1}" />
 										    	</c:forEach>
@@ -266,6 +336,13 @@ $(function() {
 										  </c:forEach>
 										  
 									  </td>
+								 </tr>
+								  <tr>
+						       		<td class="td-label">是否签收</td>
+								  	<td class="td-value">
+										   	    <input type="radio" name="signUpStatus" value="1" <c:if test="${recFile.signUpStatus==1}">  checked="checked"</c:if>>是</input>
+											 <input type="radio" name="signUpStatus" value="0" <c:if test="${recFile.signUpStatus==0 or empty recFile.signUpStatus}">  checked="checked"</c:if>>否</input>
+								  </td>
 								 </tr>
 							<%-- </c:if> --%>
 							<%-- <c:if test="${recFile.dictFileSource == 'FILE_SOURCE_BGSNBSW' or recFile.dictFileSource == 'FILE_SOURCE_JZDWCB'}"> --%>
@@ -278,7 +355,7 @@ $(function() {
 								  <tr>
 						       		<td class="td-label">领导签批</td>
 								  	<td class="td-value">
-								  		 <input type="radio" name="directorOper" value="1" <c:if test="${recFile.directorOper==1 or empty recFile.directorOper}">  checked="checked"</c:if>>局长批示</input>
+								  		 <input type="radio" name="directorOper" value="1" <c:if test="${recFile.directorOper==1}">  checked="checked"</c:if>>局长批示</input>
 										 <input type="radio" name="directorOper" value="2" <c:if test="${recFile.directorOper==2}">  checked="checked"</c:if>>局长圈阅</input>
 								  </td>
 								 </tr>
@@ -299,6 +376,13 @@ $(function() {
 					       		<td class="td-label">备注</td>
 							  	<td class="td-value">
 							  			<textarea type="text"  id="memo" name="memo">${recFile.memo}</textarea>
+							  </td>
+							 </tr>
+							 <tr style="display: none;">
+					       		<td class="td-label"></td>
+							  	<td class="td-value">
+									   	   <input type="text"  id="isValid" name="isValid" value="${recFile.isValid}" />
+									   	   <input type="text"  id="isHandle" name="isHandle" value="${recFile.isHandle}" />
 							  </td>
 							 </tr>
 					</tbody>

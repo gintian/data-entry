@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.whale.system.cache.service.DictCacheService;
+import org.whale.system.common.util.SpringContextHolder;
 import org.whale.system.domain.BaseEntry;
 import org.whale.system.jdbc.annotation.Column;
 import org.whale.system.jdbc.annotation.Id;
@@ -23,24 +25,54 @@ public class SysSequence extends BaseEntry {
 	 * 序列类型
 	 */
 	public enum SeqType{
+		/** 9楼配置 begin*/
 		/**收文序列*/
-		REC_NO(1L, "SW"),
+		//REC_NO(1L, "SW", "MS"), 
 		/**发文序列*/
-		SEND_NO(2L, "FW");
+		//SEND_NO(2L, "FW", "MF");
+		/** 9楼配置 end*/
+		
+		/** 10楼配置 begin*/
+		/**收文序列*/
+		//REC_NO(1L, "SW", "BMS"), 
+		/**发文序列*/
+		//SEND_NO(2L, "FW", "BMF");
+		/** 10楼配置 end*/
+		
+		/**收文序列*/
+		REC_NO(1L, "SW", "MS"), 
+		/**发文序列*/
+		SEND_NO(2L, "FW", "MF"); 
 		
 		private Long value;
 		private String prefix;
+		private String mjPrefix;
 		
-		SeqType(Long value, String prefix){
+		SeqType(Long value, String prefix, String mjPrefix){
 			this.value = value;
 			this.prefix = prefix;
+			this.mjPrefix = mjPrefix;
 		}
 
 		public Long getValue() {
 			return value;
 		}
 		public String getPrefix(){
+			if(this.value == 1L){
+				return SpringContextHolder.getBean(DictCacheService.class).getItemValue("DICT_REC_SEND_PREFIX", "PREFIX_REC", "SW");
+			}else if(this.value == 2L){
+				return SpringContextHolder.getBean(DictCacheService.class).getItemValue("DICT_REC_SEND_PREFIX", "PREFIX_SEND", "FW");
+			}
 			return prefix;
+		}
+
+		public String getMjPrefix() {
+			if(this.value == 1L){
+				return SpringContextHolder.getBean(DictCacheService.class).getItemValue("DICT_REC_SEND_PREFIX", "PREFIX_REC_DENSE", "MS");
+			}else if(this.value == 2L){
+				return SpringContextHolder.getBean(DictCacheService.class).getItemValue("DICT_REC_SEND_PREFIX", "PREFIX_SEND_DENSE", "MF");
+			}
+			return mjPrefix;
 		}
 	}
 	

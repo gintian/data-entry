@@ -29,6 +29,11 @@ public class BaseController extends org.whale.system.controller.BaseController{
 	 */
 	public static final String QUERY_MORE_OPEN = "open";
 	
+	/**
+	 * 前端勾选的导出记录PK
+	 */
+	public static final String EXPORT_IDS_KEY = "EXPORT_IDS";
+	
 	@Override
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(Date.class, new CustomDatePropertyEditor());

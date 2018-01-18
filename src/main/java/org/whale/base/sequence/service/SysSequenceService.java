@@ -32,7 +32,7 @@ public class SysSequenceService extends BaseService<SysSequence, Long> {
 	 * @param seqType 参见SysSequence类定义序列类型
 	 * @return
 	 */
-	public String doGetNextVal(SeqType seqType) {
+	public String doGetNextVal(boolean isDense, SeqType seqType) {
 		synchronized(SysSequence.SEQ_LOCK.get(seqType.getValue())){
 			SysSequence currentSequence = sysSequenceDao.getCurrentSequence(seqType.getValue());
 			Date now = new Date();
@@ -43,6 +43,9 @@ public class SysSequenceService extends BaseService<SysSequence, Long> {
 				currentSequence.setCurrentValue(1l);
 			}
 			sysSequenceDao.update(currentSequence);
+			if(isDense){
+				return seqType.getMjPrefix() + TimeUtil.getCurrDate("yyyyMMdd") + String.format("%03d", currentSequence.getCurrentValue());
+			}
 			return seqType.getPrefix() + TimeUtil.getCurrDate("yyyyMMdd") + String.format("%03d", currentSequence.getCurrentValue());
 		}
 	}

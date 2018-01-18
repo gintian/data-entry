@@ -7,7 +7,7 @@
 <link href="${ctx}/html/css/flowPage.css" rel="stylesheet" />
 <script language="javascript">
 $(function(){
-	new Grid({});
+	new Grid({beforeLoadPage:setExportIds});
 });
 
 function add(){
@@ -62,15 +62,39 @@ function proposed(id){
 	$.openWin({url: "${ctx}/de/recFile/goProposedView?id="+id,"title":'查看拟办单'});
 }
 
+function supervise(id){
+	$.openWin({url: "${ctx}/de/recFile/goSuperviseView?id="+id,"title":'查看督办单', height:700});
+}
+
 /**
  * 导出Excel表格
  */
 function doExcel(){
+	setExportIds();
 	$.form_submit($("#page_form").get(0), {
  		"action": "${ctx}/de/recFile/doSignExcel"
 	}); 
 	$("#page_form").attr("action","${ctx}/de/recFile/goSignList");
+	// 导出后去掉取消勾选的记录
+	$("#EXPORT_IDS").val("");
+	if(grid.getSelectIds() > 0){
+		grid.checkAll();
+	}
 }
+
+function setExportIds(){
+	var exportIds = $("#EXPORT_IDS").val();
+	var idArr = grid.getSelectIds();
+	if(idArr.length > 0){
+		if(exportIds){
+			exportIds = exportIds + "," + idArr.join(',');
+		} else{
+			exportIds = idArr.join(',');
+		}
+	}
+	$("#EXPORT_IDS").val(exportIds);
+}
+
 </script>
 </head>
     
@@ -92,17 +116,27 @@ function doExcel(){
 								  	<td class="td-value">
 										   	  <input type="text" class="cdate" id="REC_DATE" name="REC_DATE"  onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="${paramMap.REC_DATE}"/>
 								  </td>
-								  <td class="td-label">文件标题</td> 
+								  <td class="td-label">文件来源</td> 
+									  	<td class="td-value">
+												   <tag:dict id="DICT_FILE_SOURCE" dictCode="DICT_FILE_SOURCE" headerLabel="--请选择--" value="${paramMap.DICT_FILE_SOURCE}"></tag:dict>
+									  </td>
+								 </tr>
+							     <tr>
+							     	<td class="td-label">收文号</td> 
+								  	<td class="td-value">
+										   	  <input type="text"  name="REC_NO" style="width:160px;" value="${paramMap.REC_NO}" />
+								 	</td>
+								  	<td class="td-label">文件标题</td> 
 								  	<td class="td-value">
 										   	   <input type="text"  name="FILE_TITLE" style="width:160px;" value="${paramMap.FILE_TITLE}" />
 								  </td>
 								 </tr>
-							     <tr>
-								 	<td class="td-label">签收单位</td> 
+								 <tr>
+								 	<td class="td-label">文号</td> 
 								  	<td class="td-value">
-										   	   <input type="text"  name="ORG_COMPANY" style="width:160px;" value="${paramMap.ORG_COMPANY}" />
+										   	   <input type="text"  name="FILE_CODE" style="width:160px;" value="${paramMap.FILE_CODE}" />
 								  </td>
-								  	 <td class="td-label">是否签收</td> 
+								   <td class="td-label">是否签收</td> 
 								 	<td class="td-value">
 											  <select name="SIGN_UP_STATUS" style="width:165px;">
 											   		<option value=""  <c:if test="${paramMap.SIGN_UP_STATUS ==''}">selected="selected"</c:if>>--请选择--</option>
@@ -112,11 +146,16 @@ function doExcel(){
 								 	 	</td>
 								 </tr>
 								 <tr>
-								 	<td class="td-label">文号</td> 
+								 	<td class="td-label">签收单位</td> 
 								  	<td class="td-value">
-										   	   <input type="text"  name="FILE_CODE" style="width:160px;" value="${paramMap.FILE_CODE}" />
-								  </td>
+										   	   <input type="text"  name="ORG_COMPANY" style="width:160px;" value="${paramMap.ORG_COMPANY}" />
+								  	</td>
+								  	<td class="td-label">来文单位</td> 
+								  	<td class="td-value">
+										   	   <input type="text"  name="DICT_REC_COMPANY" style="width:160px;" value="${paramMap.DICT_REC_COMPANY}" />
+								  	</td>
 								 </tr>
+								 <input type="hidden" id="EXPORT_IDS" name="EXPORT_IDS" value="${paramMap.EXPORT_IDS}"/>
 						<tr>
 							<td colspan="4" class="td-btn">
 								<div class="sch_qk_con"> 
@@ -148,8 +187,10 @@ function doExcel(){
 
 			<div class="content-list">
 				<table cellpadding="0" cellspacing="0" id="gridTable">
-				<!-- 	<col width="3%"/> -->
 					<col width="3%"/>
+					<col width="3%"/>
+					<col width="14%"/>
+					<col width="7%"/>
 					<col width="10%"/>
 					<col width="6%"/>
 					<col width="6%"/>
@@ -169,15 +210,15 @@ function doExcel(){
 							 <th>
 								序号
 							</th>
-							<!--<th>
+							<th>
 								<input type="checkbox" id="ck_all" onclick="grid.checkAll()" /> 
-							</th> -->
-								<!-- <th>
+							</th> 
+								<th>
 									操作
-								</th> -->
-								<!-- <th>
+								</th>
+								<th>
 									文件来源
-								</th> -->
+								</th>
 								<th>
 									收文号
 								</th>
@@ -233,31 +274,34 @@ function doExcel(){
 							<td class="td-seq" style="color:#000">
 								${item_index.index+1}
 							</td>
-							<%-- <td class="td-center">
-										<input type="checkbox" value="${item.PK_REC_FILE }" index="${item_index.index+1}" status="${item.status}"/>
-							</td> --%>
+							<td class="td-center">
+										<input type="checkbox" value="${item.PK_REC_FILE }" index="${item_index.index+1}" status="${item.status}" <c:if test="${fn:contains(','.concat(paramMap.EXPORT_IDS.concat(',')) , ','.concat(item.PK_REC_FILE.toString().concat(',')) )}">checked="checked"</c:if> />
+							</td>
 							
-									<%-- <td class="td-center">
+									<td class="td-center">
 										<a href="#" onclick="update('${item.PK_REC_FILE}')">
 											编辑
 										</a>
 										<a href="#" onclick="view('${item.PK_REC_FILE}')">
 												查看
 										</a>
+										<a href="#" onclick="supervise('${item.PK_REC_FILE}')">
+													督办单
+										</a>
 										<c:if test="${item.IS_OVERTIME == 1}">
 											<a href="#" onclick="handle('${item.PK_REC_FILE}')">
 													办结
 											</a>
 										</c:if>
-										<c:if  test="${item.IS_PROPOSED==1 and (paramMap.DICT_FILE_SOURCE == 'FILE_SOURCE_GAXT' or paramMap.DICT_FILE_SOURCE == 'FILE_SOURCE_WBXT')}">
+										<c:if  test="${item.IS_PROPOSED==1 and (item.DICT_FILE_SOURCE == 'FILE_SOURCE_GAXT' or item.DICT_FILE_SOURCE == 'FILE_SOURCE_WBXT')}">
 											<a href="#" onclick="proposed('${item.PK_REC_FILE}')">
 													拟办单
 											</a>									
 										</c:if>
-									</td> --%>
-										<%-- <td title="">
+									</td>
+										<td class="td-center" title="">
 													<tag:dict id="dictFileSource" dictCode="DICT_FILE_SOURCE" readonly="true" value="${item.DICT_FILE_SOURCE}"></tag:dict>
-										</td> --%>
+										</td>
 										<td class="td-center" title="${item.REC_NO}">
 													${item.REC_NO} 
 										</td>
@@ -265,7 +309,8 @@ function doExcel(){
 													<fmt:formatDate value='${item.REC_DATE}' pattern='yyyy-MM-dd'/>
 										</td>
 										<td class="td-center" title="">
-													<tag:dict id="dictRecCompany" dictCode="DICT_REC_COMPANY" readonly="true" value="${item.DICT_REC_COMPANY}"></tag:dict>
+													<%-- <tag:dict id="dictRecCompany" dictCode="DICT_REC_COMPANY" readonly="true" value="${item.DICT_REC_COMPANY}"></tag:dict> --%>
+													${item.DICT_REC_COMPANY} 
 										</td>
 										<td class="td-center" title="">
 													<tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY" readonly="true" value="${item.DICT_FILE_CATEGORY}"></tag:dict>
@@ -297,7 +342,7 @@ function doExcel(){
 										<%-- <td title="${item.IS_PROPOSED}">
 													<c:if test="${empty item.IS_PROPOSED or item.IS_PROPOSED==0}">否</c:if> 
 													<c:if test="${item.IS_PROPOSED==1}">是</c:if>  --%>
-										<td class="td-center">
+										<td class="td-center" title="${item.ORG_COMPANY}">
 													${item.ORG_COMPANY} 
 										</td>
 										<td class="td-center">

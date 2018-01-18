@@ -48,6 +48,9 @@ public class SendFile extends BaseEntry {
 	@Column(name="DENSE_CODE", cnName="密级编号，只有当选项是秘密或机密或绝密时，才出现密级编号，密级编号不是必填项，也可以填无")
 	private String denseCode; 
 	
+	@Column(name="CONFIDENTIAL_CODE", cnName="机要编号")
+	private String confidentialCode;
+	
 	@Column(name="MEMO", cnName="备注")
 	private String memo; 
 	
@@ -209,6 +212,14 @@ public class SendFile extends BaseEntry {
 
 	public void setSendCompanysOther(String sendCompanysOther) {
 		this.sendCompanysOther = sendCompanysOther;
+	}
+
+	public String getConfidentialCode() {
+		return confidentialCode;
+	}
+
+	public void setConfidentialCode(String confidentialCode) {
+		this.confidentialCode = confidentialCode;
 	}
 
 }

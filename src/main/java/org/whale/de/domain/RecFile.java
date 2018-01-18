@@ -66,8 +66,14 @@ public class RecFile extends BaseEntry {
 	@Column(name="IS_PROPOSED", cnName="是否拟办：1是0否")
 	private Integer isProposed; 
 	
+	@Column(name="IS_NEED_FEEDBACK", cnName="是否需办理反馈（1是0否）")
+	private Integer isNeedFeedback; 
+	
 	@Column(name="PROPOSED_COMMENTS", cnName="拟办意见")
 	private String proposedComments; 
+	
+	@Column(name="PROPOSED_DATE", cnName="拟办落款时间")
+	private Date proposedDate;
 	
 	@Column(name="LEADER_INS", cnName="领导批示")
 	private String leaderIns; 
@@ -337,6 +343,22 @@ public class RecFile extends BaseEntry {
 
 	public void setAttachment(String attachment) {
 		this.attachment = attachment;
+	}
+
+	public Integer getIsNeedFeedback() {
+		return isNeedFeedback;
+	}
+
+	public void setIsNeedFeedback(Integer isNeedFeedback) {
+		this.isNeedFeedback = isNeedFeedback;
+	}
+
+	public Date getProposedDate() {
+		return proposedDate;
+	}
+
+	public void setProposedDate(Date proposedDate) {
+		this.proposedDate = proposedDate;
 	}
 
 }

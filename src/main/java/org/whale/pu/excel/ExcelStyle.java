@@ -23,10 +23,10 @@ public class ExcelStyle {
 
 		style.setFillForegroundColor(HSSFColor.WHITE.index);
 		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+	/*	style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-		style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		style.setBorderTop(HSSFCellStyle.BORDER_THIN);*/
 		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 		
 		HSSFFont font = workbook.createFont();

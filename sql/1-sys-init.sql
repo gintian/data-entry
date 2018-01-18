@@ -561,6 +561,7 @@ INSERT INTO `sys_dict_item` VALUES ('12', '1', '部门根节点名称', 'ITEM_DE
 INSERT INTO `sys_dict_item` VALUES ('13', '4', '默认文件夹', 'ITEM_FILE_DIR', 'upload', '', '1', '1');
 INSERT INTO `sys_dict_item` VALUES ('14', '4', '文件公共路径', 'ITEM_FILE_PUB_DIRS', 'file/', '', '1', '2');
 INSERT INTO `sys_dict_item` VALUES ('15', '1', '开启自动登录', 'AUTO_LOGIN_FLAG', 'true', '', '1', '1');
+INSERT INTO `sys_dict_item` VALUES ('16', '1', '涉密配置', 'DENSE_CFG', 'true', '', '1', '8');
 
 INSERT INTO `sys_dict_item` VALUES ('83', '4', '默认文件夹', 'ITEM_FILE_DIR', 'upload', '', '1', '1');
 INSERT INTO `sys_dict_item` VALUES ('84', '4', '文件公共路径', 'ITEM_FILE_PUB_DIRS', 'file/', '', '1', '2');

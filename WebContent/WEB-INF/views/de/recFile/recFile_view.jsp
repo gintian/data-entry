@@ -9,6 +9,18 @@ $(function(){
 	new ToolBar({items:[
 		{id:"closeBut", className:"close", func:"$.closeWin();return false;", text:"关闭"}
 	]});
+	
+	var signTr = $('#signTr');
+	
+	<c:forEach var="rfSign" items="${rfSigns}">
+		$(':checkbox[value="${rfSign.fkOrganization}"]',signTr).attr('checked','checked')
+				.next().children('input').val('${rfSign.signUpOther}')
+				.parent()
+				.next('input').val('${rfSign.signUp}')
+				.next('input').val('<fmt:formatDate value="${rfSign.signTime}" pattern="yyyy-MM-dd"/>')
+				.next('input').val('${rfSign.signUp2}')
+				.next('input').val('<fmt:formatDate value="${rfSign.signTime2}" pattern="yyyy-MM-dd"/>');
+	</c:forEach>
 });
 </script>
 
@@ -26,12 +38,12 @@ $(function(){
 					<col width="90%"/>
 					<tbody>
 					
-						    <%--  <tr>
+						    <tr>
 					       		<td class="td-label">文件来源</td>
 							  	<td class="td-value">
 											<tag:dict dictCode="DICT_FILE_SOURCE" id="dictFileSource" value="${item.dictFileSource}" readonly="true"></tag:dict>
 							  </td>
-							 </tr> --%>
+							 </tr>
 							  <tr>
 					       		<td class="td-label">收文号</td>
 							  	<td class="td-value">
@@ -47,7 +59,8 @@ $(function(){
 							  <tr>
 					       		<td class="td-label">来文单位</td>
 							  	<td class="td-value">
-											<tag:dict dictCode="DICT_REC_COMPANY" id="dictRecCompany" value="${item.dictRecCompany}" readonly="true"></tag:dict>
+											<%-- <tag:dict dictCode="DICT_REC_COMPANY" id="dictRecCompany" value="${item.dictRecCompany}" readonly="true"></tag:dict> --%>
+											${item.dictRecCompany}
 							  </td>
 							 </tr>
 						     <tr>
@@ -59,7 +72,7 @@ $(function(){
 							  <tr>
 					       		<td class="td-label">文件标题</td>
 							  	<td class="td-value">
-									    	 <textarea type="text"  id="fileTitle" name="fileTitle" readonly="readonly">${item.fileTitle}</textarea>
+									    	 <textarea type="text"  id="fileTitle" name="fileTitle" readonly="readonly" style="font-size:14px;">${item.fileTitle}</textarea>
 							  </td>
 							 </tr>
 						     <tr>
@@ -74,12 +87,14 @@ $(function(){
 											<tag:dict dictCode="DICT_DENSE" id="dictDense" value="${item.dictDense}" readonly="true"></tag:dict>
 							  </td>
 							 </tr>
-						     <tr>
-					       		<td class="td-label">密级编号</td>
-							  	<td class="td-value">
-									    	${item.denseCode}
-							  </td>
-							 </tr>
+							 <c:if test="${item.dictDense=='DENSE_MM' or item.dictDense=='DENSE_JIM' or item.dictDense=='DENSE_JUEM'}">
+							     <tr>
+						       		<td class="td-label">密级编号</td>
+								  	<td class="td-value">
+										    	${item.denseCode}
+								  </td>
+								 </tr>
+							 </c:if>
 						     <tr>
 					       		<td class="td-label">等级</td>
 							  	<td class="td-value">
@@ -113,10 +128,40 @@ $(function(){
 										 <input type="radio" disabled="disabled" name="isProposed" value="0" <c:if test="${item.isProposed==0}">  checked="checked"</c:if>>否</input>
 								  </td>
 								 </tr>
-							     <tr>
+							     <tr id="proposedCommentsTr" <c:if test="${item.isProposed==0}">style="display: none"</c:if>>
 						       		<td class="td-label">拟办意见</td>
 								  	<td class="td-value">
 								  		 <textarea type="text"  id="proposedComments" name="proposedComments" readonly="readonly">${item.proposedComments}</textarea>
+								  </td>
+								 </tr>
+								 <tr id="signTr" style="display:none">
+									  <td class="td-label">签收单位</td>
+									  <td class="td-value">
+									  	  <c:set var="index" value="0"></c:set>
+									   	  <c:forEach items="${organizationMap}" var="map">
+									   	  		<tag:dict id="dictOrgCategory" dictCode="DICT_ORG_CATEGORY" readonly="true" value="${map.key}"></tag:dict>：<br/>
+									   	  		<c:if test="${map.key != 'ORG_CATEGORY_QT'}">
+									   	  			<input type="checkbox" onclick="checkAll(this, '${map.key}')" />全部<br/>
+									   	  		</c:if>
+										    	<c:forEach items="${map.value}" var="org">
+										    		 <input type="checkbox" pid="${map.key}" name="recFileSigns[${index}].fkOrganization" value="${org.pkOrganization}"/><span style="width:180px;text-align:left;display:inline-block;">${org.orgCompany}&nbsp;&nbsp;<input type="text" name="recFileSigns[${index}].signUpOther" style="width:100px;<c:if test="${map.key != 'ORG_CATEGORY_QT'}">display:none</c:if>"/></span>
+										    		 签收人：<input type="text" name="recFileSigns[${index}].signUp" style="width:100px;height:initial"></input>&nbsp;&nbsp;
+										    		 签收时间： <input type="text" class="date" name="recFileSigns[${index}].signTime" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" style="width:120px;height:initial"/>&nbsp;&nbsp;
+										    		 签收人：<input type="text" name="recFileSigns[${index}].signUp2" style="width:100px;height:initial"></input>&nbsp;&nbsp;
+										    		 签收时间： <input type="text" class="date" name="recFileSigns[${index}].signTime2" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" style="width:120px;height:initial"/>
+										    		 <br/>
+										    		 <c:set var="index" value="${index+1}" />
+										    	</c:forEach>
+										    	<br/>
+										  </c:forEach>
+										  
+									  </td>
+								 </tr>
+								 <tr>
+						       		<td class="td-label">是否签收</td>
+								  	<td class="td-value">
+										   	    <input type="radio" disabled="disabled" name="signUpStatus" value="1" <c:if test="${recFile.signUpStatus==1}">  checked="checked"</c:if>>是</input>
+											 <input type="radio" disabled="disabled" name="signUpStatus" value="0" <c:if test="${recFile.signUpStatus==0 or empty recFile.signUpStatus}">  checked="checked"</c:if>>否</input>
 								  </td>
 								 </tr>
 							 <%-- </c:if> --%>

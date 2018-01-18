@@ -36,6 +36,12 @@ public class RecFileSign extends BaseEntry {
 	@Column(name="SIGN_TIME", cnName="签收时间")
 	private Date signTime; 
 	
+	@Column(name="SIGN_UP2", cnName="签收人2")
+	private String signUp2; 
+	
+	@Column(name="SIGN_TIME2", cnName="签收时间2")
+	private Date signTime2; 
+	
 	@Column(name="MEMO", cnName="备注")
 	private String memo; 
 	
@@ -161,6 +167,22 @@ public class RecFileSign extends BaseEntry {
 	/**删除状态位(1有效，0无效，作废的时候表示无效)*/
 	public void setIsValid(Integer isValid) {
 		this.isValid = isValid;
+	}
+
+	public String getSignUp2() {
+		return signUp2;
+	}
+
+	public void setSignUp2(String signUp2) {
+		this.signUp2 = signUp2;
+	}
+
+	public Date getSignTime2() {
+		return signTime2;
+	}
+
+	public void setSignTime2(Date signTime2) {
+		this.signTime2 = signTime2;
 	}
 
 }

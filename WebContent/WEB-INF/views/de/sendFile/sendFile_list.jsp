@@ -67,31 +67,44 @@ function doExcel(){
 						<col  width="10%"/>
 						<col  width="40%"/>
 					<tbody>
-							     <tr>
-								 	<td class="td-label">文件类别</td> 
+					 			<tr>
+					 				<td class="td-label">发文日期</td> 
+					 				<td class="td-value">
+										   	   <input type="text" id="SEND_DATE" name="MIN_SEND_DATE" title="发文日期" style="width:160px;" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="${paramMap.MIN_SEND_DATE}"/>
+										   	   ~
+										   	   <input type="text" id="SEND_DATE" name="MAX_SEND_DATE" title="发文日期" style="width:160px;" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="${paramMap.MAX_SEND_DATE}"/>
+								    </td>
+								  	<%-- <td class="td-value">
+										   	   <input type="text"  name="SEND_DATE" style="width:160px;" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="${paramMap.SEND_DATE}"/>
+								 	 </td> --%>
+								 	 <td class="td-label">发文号</td> 
 								  	<td class="td-value">
-											   <tag:dict id="DICT_FILE_CATEGORY" dictCode="DICT_FILE_CATEGORY" headerLabel="--请选择--" value="${paramMap.DICT_FILE_CATEGORY}"></tag:dict>
-								  </td>
+										   	   <input type="text"  name="SEND_NO" style="width:160px;" value="${paramMap.SEND_NO}" />
+								  	</td>
+								 </tr>
+							     <tr>
 								  <td class="td-label">文件标题</td> 
 								  	<td class="td-value">
 										   	   <input type="text"  name="FILE_TITLE" style="width:160px;" value="${paramMap.FILE_TITLE}" />
 								  </td>
-								 </tr>
-								 <tr>
-								 	<td class="td-label">文号</td> 
+								  <td class="td-label">文号</td> 
 								  	<td class="td-value">
 										   	   <input type="text"  name="FILE_CODE" style="width:160px;" value="${paramMap.FILE_CODE}" />
-								  </td>
-								 	<td class="td-label">发文日期</td> 
-								  	<td class="td-value">
-										   	   <input type="text"  name="SEND_DATE" style="width:160px;" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" value="${paramMap.SEND_DATE}"/>
-								  </td>
+								  	</td>
 								 </tr>
 							     <tr>
-								 	<td class="td-label">密级</td> 
+							     	<td class="td-label">文件类别</td> 
+								  	<td class="td-value">
+											   <tag:dict id="DICT_FILE_CATEGORY" dictCode="DICT_FILE_CATEGORY" headerLabel="--请选择--" value="${paramMap.DICT_FILE_CATEGORY}"></tag:dict>
+								  	</td>
+								  	<td class="td-label">机要编号</td> 
+								  	<td class="td-value">
+											  <input type="text"  name="CONFIDENTIAL_CODE" style="width:160px;" value="${paramMap.CONFIDENTIAL_CODE}" />
+								 	</td>
+								 	<%-- <td class="td-label">密级</td> 
 								  	<td class="td-value">
 											   <tag:dict id="DICT_DENSE" dictCode="DICT_DENSE" headerLabel="--请选择--" value="${paramMap.DICT_DENSE}"></tag:dict>
-								  </td>
+								  	</td> --%>
 								 </tr>
 						<tr>
 							<td colspan="4" class="td-btn">
@@ -144,6 +157,7 @@ function doExcel(){
 					<col width="18%"/>
 					<col width="8%"/>
 					<col width="6%"/>
+					<col width="6%"/>
 					<col width="8%"/>
 					<thead>
 						<tr>
@@ -177,9 +191,9 @@ function doExcel(){
 								<th>
 									密级
 								</th>
-								<!-- <th>
-									密级编号
-								</th> -->
+								<th>
+									机要编号
+								</th>
 								<th>
 									修改用户
 								</th>
@@ -224,9 +238,9 @@ function doExcel(){
 										<td title="" class="td-center">
 													<tag:dict id="dictDense" dictCode="DICT_DENSE" readonly="true" value="${item.DICT_DENSE}"></tag:dict>
 										</td>
-										<%-- <td title="${item.DENSE_CODE}">
-													${item.DENSE_CODE} 
-										</td> --%>
+										<td title="${item.CONFIDENTIAL_CODE}">
+													${item.CONFIDENTIAL_CODE} 
+										</td>
 										<td title="${item.userName}" class="td-center">
 													${item.userName} 
 										</td>

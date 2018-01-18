@@ -24,6 +24,8 @@ import org.whale.pu.excel.ExcelWebUtil;
 import org.whale.pu.excel.IColumnHandler;
 import org.whale.system.auth.annotation.AuthUri;
 import org.whale.system.cache.service.DictCacheService;
+import org.whale.system.common.constant.SysConstant;
+import org.whale.system.common.exception.BusinessException;
 import org.whale.system.common.exception.SysException;
 import org.whale.system.common.util.LangUtil;
 import org.whale.system.common.util.WebUtil;
@@ -52,19 +54,26 @@ public class SendFileController extends BaseController {
 	
 	 	sendFileService.querySendFilePage(this.newPage(request),getParamMap(request));
 	    
+	 	boolean isDense = SysConstant.LOGIC_TRUE.equalsIgnoreCase(dictCacheService.getItemValue("DICT_SYS_CONF", "DENSE_CFG"));
+	 	
 		ModelAndView mav = new ModelAndView("de/sendFile/sendFile_list")
 						.addObject(PARAM_MAP_KEY, getParamMap(request));
-		mav.addObject(QUERY_MORE_PARAMETER_NAME,request.getParameter(QUERY_MORE_PARAMETER_NAME));
+		mav.addObject(QUERY_MORE_PARAMETER_NAME,request.getParameter(QUERY_MORE_PARAMETER_NAME))
+		.addObject("isDense", isDense);
 		
 		return mav;
 	}
 	
 	@RequestMapping("/goSave")
 	public ModelAndView goSave(HttpServletRequest request, HttpServletResponse response){
+		
+		boolean isDense = SysConstant.LOGIC_TRUE.equalsIgnoreCase(dictCacheService.getItemValue("DICT_SYS_CONF", "DENSE_CFG"));
+		
 		return new ModelAndView("de/sendFile/sendFile_edit")
 //		.addObject("nextSendNo", String.format("SN%s", TimeUtil.getCurrDate("yyyyMMddHHmmssS")))
-		.addObject("nextSendNo", sysSequenceService.doGetNextVal(SeqType.SEND_NO))
-		.addObject("organizationMap", organizationService.queryOrganizationMap(2, null));
+//		.addObject("nextSendNo", sysSequenceService.doGetNextVal(SeqType.SEND_NO))
+		.addObject("organizationMap", organizationService.queryOrganizationMap(2, null))
+		.addObject("isDense", isDense);
 	}
 	
 	@RequestMapping("/goUpdate")
@@ -73,10 +82,17 @@ public class SendFileController extends BaseController {
 		if(sendFile == null){
 			throw new SysException("查找不到 id="+id);
 		}
+		boolean isDense = SysConstant.LOGIC_TRUE.equalsIgnoreCase(dictCacheService.getItemValue("DICT_SYS_CONF", "DENSE_CFG"));
+		// 收文创建用户、管理员才能操作
+		UserContext uc = this.getUserContext(request);
+		if(!(uc.getUserId().equals(sendFile.getCreateById()) || uc.isSuperAdmin())){
+			throw new BusinessException("无修改权限，请重新操作");
+		}
 		
 		return new ModelAndView("de/sendFile/sendFile_edit")
 				.addObject("sendFile", sendFile)
-				.addObject("organizationMap", organizationService.queryOrganizationMap(2, null));
+				.addObject("organizationMap", organizationService.queryOrganizationMap(2, null))
+				.addObject("isDense", isDense);
 	}
 	
 	@RequestMapping("/goView")
@@ -86,13 +102,20 @@ public class SendFileController extends BaseController {
 			throw new SysException("查找不到 id="+id);
 		}
 		
+		boolean isDense = SysConstant.LOGIC_TRUE.equalsIgnoreCase(dictCacheService.getItemValue("DICT_SYS_CONF", "DENSE_CFG"));
+		
 		return new ModelAndView("de/sendFile/sendFile_view")
-				.addObject("item", sendFile);
+				.addObject("item", sendFile)
+				.addObject("isDense", isDense);
 	}
 	
 	@RequestMapping("/doSave")
 	public void doSave(HttpServletRequest request, HttpServletResponse response, SendFile sendFile){
 		UserContext uc = this.getUserContext(request);
+		boolean isDense = SysConstant.LOGIC_TRUE.equalsIgnoreCase(dictCacheService.getItemValue("DICT_SYS_CONF", "DENSE_CFG"));
+		if(null != sendFile){
+			sendFile.setSendNo(sysSequenceService.doGetNextVal(isDense, SeqType.SEND_NO));
+		}
 		this.sendFileService.save(sendFile);
 		
 		WebUtil.printSuccess(request, response);
@@ -112,6 +135,17 @@ public class SendFileController extends BaseController {
 		if(idS == null || idS.size() < 1){
 			WebUtil.printFail(request, response, "您要删除的记录，系统中并不存在，ids为：" + ids);
 			return ;
+		}
+		SendFile sendFile = null;
+		// 收文创建用户、管理员才能操作
+		UserContext uc = this.getUserContext(request);
+		for (Long long1 : idS) {
+			sendFile = this.sendFileService.get(long1);
+			if(!(uc.getUserId().equals(sendFile.getCreateById()) || uc.isSuperAdmin())){
+//				throw new BusinessException("无删除权限，请重新操作");
+				WebUtil.printSuccess(request, response, "无删除权限，请重新操作");
+				return;
+			}
 		}
 		this.sendFileService.delete(idS);
 		WebUtil.printSuccess(request, response);
@@ -150,6 +184,7 @@ public class SendFileController extends BaseController {
 					else return "";
 				}
 			}));
+		titleMap.put("CONFIDENTIAL_CODE", new ColumnHandlerComponent("机要编号", null));
 		titleMap.put("DENSE_CODE",new ColumnHandlerComponent("密级编号",new IColumnHandler() {
 			
 			@Override
@@ -157,9 +192,16 @@ public class SendFileController extends BaseController {
 				if(object == null || "".equals(object.toString())){
 					return "";
 				}
-				int dcCnt = Integer.parseInt(object.toString());
+				String[] dcArr = object.toString().split("-");
+				Integer startIndex = Integer.parseInt(dcArr[0]);
+				Integer endIndex = Integer.parseInt(dcArr[1]);
+				if(startIndex > endIndex){
+					Integer temp = endIndex;
+					endIndex = startIndex;
+					startIndex = temp;
+				}
 				String outDenseCode = "";
-				for(int i=1; i<=dcCnt; i++){
+				for(int i=startIndex; i<=endIndex; i++){
 					outDenseCode = outDenseCode + i + "\n";
 				}
 				return outDenseCode.substring(0, outDenseCode.length()-1);

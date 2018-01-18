@@ -147,6 +147,7 @@ public class ExcelExportUtils<T> {
 	/**
 	 * 标题、内容导出
 	 * @param sheetName
+	 * @param isLandscape 是否横向打印
 	 * @param titleMap
 	 * @param dataList
 	 * @return
@@ -183,28 +184,49 @@ public class ExcelExportUtils<T> {
             // 遍历产生sheet
 			for (int s = 0; s < sheetNum; s++) {
 				sheet = workbook.createSheet(sheetName + "_" + s);
-				sheet.setDefaultColumnWidth(18); //设置默认列宽
+				//设置默认横向打印
+				sheet.getPrintSetup().setLandscape(true);
+				//设置默认列宽
+				//sheet.setDefaultColumnWidth(18); 
+				/*if(null != titleMap && titleMap.size() > 10){
+					sheet.setDefaultColumnWidth(14); 
+				}*/
+				
 				// 判断是否加顶部表头
 				if(sheetHearderFlag == 1){
 					HSSFRow row = sheet.createRow(0);
 //					row.setHeightInPoints(50);
-					HSSFCell headerCell = row.createCell(0);
-					headerCell.setCellStyle(topHeadStyle);
-					headerCell.setCellValue(new HSSFRichTextString(sheetTopHeader));
+					int k = 0;
+					for (Iterator<String> it = titleMap.keySet().iterator();it.hasNext();k++){
+						String key = it.next();
+						HSSFCell headerCell = row.createCell(k);
+						headerCell.setCellStyle(topHeadStyle);
+						headerCell.setCellValue(new HSSFRichTextString(sheetTopHeader));
+						
+						if(null != titleMap.get(key) && 0 != titleMap.get(key).getColumnWidth()){
+							sheet.setColumnWidth(k, titleMap.get(key).getColumnWidth() * 256);	
+						} else{
+							if(titleMap.size() > 10){
+								sheet.setColumnWidth(k, 7 * 256);	
+							}else{
+								sheet.setColumnWidth(k, 12 * 256);	
+							}
+						}
+					}
+					
 					sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titleMap.size()-1));
 				}
                 // 添加工作表标题
     			HSSFRow row = sheet.createRow(0+sheetHearderFlag);
     			int i=0;
-    			for (Iterator<String> it =  titleMap.keySet().iterator();it.hasNext();i++)
-    			   {
+    			for (Iterator<String> it =  titleMap.keySet().iterator();it.hasNext();i++){
     			    String key = it.next();
     			    HSSFCell cell = row.createCell(i);
+    			    headStyle.setWrapText(true);
     				cell.setCellStyle(headStyle);
     				HSSFRichTextString text = new HSSFRichTextString(titleMap.get(key).getColumnName());
     				cell.setCellValue(text);
-    			   }
-
+    			}
     			
     			// 添加工作表内容
     			for (int j = 0; j < ExportSettingContants.SHEET_DATA_NUM; j++) {
@@ -221,7 +243,6 @@ public class ExcelExportUtils<T> {
     					IColumnHandler handler=component.getHandler();
     					if(handler!=null){
     						value=handler.handle(value,rowList);
-    						
     					}
     					HSSFCell cell = row.createCell(i);
     					bodyStyle.setWrapText(true);  
@@ -230,7 +251,7 @@ public class ExcelExportUtils<T> {
     					String textValue=(null==value)?"":value.toString();
     					
     					// 签收人临时处理
-    					if("DE_SIGN_UP".equals(key) && StringUtils.isNotBlank(textValue)){
+    					/*if("DE_SIGN_UP".equals(key) && StringUtils.isNotBlank(textValue)){
     						row.setHeightInPoints(20 * Float.parseFloat(textValue));
     					}else{
                             if (component.getDataType()==ExcelConstant.DATA_TYPE_DOUBLE) {
@@ -246,7 +267,19 @@ public class ExcelExportUtils<T> {
                                         textValue);
                                 cell.setCellValue(richString);
                             }
-    					}
+    					}*/
+    					if (component.getDataType()==ExcelConstant.DATA_TYPE_DOUBLE) {
+                        	try {
+                            cell.setCellValue(Double.parseDouble(textValue));
+                        	} catch (NumberFormatException e) {
+                        		HSSFRichTextString richString = new HSSFRichTextString(textValue);
+                                cell.setCellValue(richString);
+							}
+                        } else {
+                            HSSFRichTextString richString = new HSSFRichTextString(
+                                    textValue);
+                            cell.setCellValue(richString);
+                        }
     				}
     				sheetContentCount++;
     			}

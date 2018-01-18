@@ -73,6 +73,14 @@ $(function(){
 									    	${item.denseCode}
 							  </td>
 							 </tr>
+							 <c:if test="${isDense }">
+								 <tr>
+						       		<td class="td-label">机要编号</td>
+								  	<td class="td-value">
+											 ${item.confidentialCode}
+								  </td>
+								 </tr>
+							 </c:if>
 						     <tr>
 					       		<td class="td-label">备注</td>
 							  	<td class="td-value">

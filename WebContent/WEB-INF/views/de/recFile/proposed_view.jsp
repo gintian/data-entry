@@ -9,6 +9,30 @@
     <title>拟办单</title>
     <%@include file="/html/jsp/common.jsp" %>
     <link href="${resource}/css/proposed-style.css" rel="stylesheet" />
+    <style>
+    	.formwrap .form-content1{display:block;line-height:1.1;overflow:hidden}
+    	.form-col {
+    		height: 1.8cm;
+    	}
+    	.form-col .form-title {
+    		line-height: 1.8cm
+    	}
+    	.form-col .form-content {
+    		height:1.8cm;
+    		line-height:0.9cm
+    	}
+    	.form-col .form-content:after {
+    		display: inline-block;
+    		vertical-align:middle;
+    		height:100%;
+    		width:0;
+    		content:'';
+    	}
+    	.form-col .form-vm {
+    		display: inline-block;
+    		vertical-align:middle;
+    	}
+    </style>
     <script language="javascript">
 	    var hkey_root,hkey_path,hkey_key
 	    hkey_root="HKEY_CURRENT_USER"
@@ -48,39 +72,102 @@
     <ul class="form-subtitle">
         <li>
             <span class="form-title">收文日期：</span>
-            <span class="form-content"><fmt:formatDate value="${item.recDate}" pattern="yyyy-MM-dd"/></span>
+            <span class="form-content form-font-en"><fmt:formatDate value="${item.recDate}" pattern="yyyy-MM-dd"/></span>
         </li>
         <li>
             <span class="form-title">收文号：</span>
-            <span class="form-content">${item.recNo}</span>
+            <span class="form-content form-font-en">${item.recNo}</span>
         </li>
     </ul>
     <div class="form-table">
         <ul class="form-row">
-            <li>
+            <li class="form-col">
                 <span class="form-title">来文单位：</span>
-                <span class="form-content"><tag:dict dictCode="DICT_REC_COMPANY" id="dictRecCompany" value="${item.dictRecCompany}" readonly="true"></tag:dict></span>
+                <%-- <span class="form-content"><tag:dict dictCode="DICT_REC_COMPANY" id="dictRecCompany" value="${item.dictRecCompany}" readonly="true"></tag:dict></span> --%>
+				<span class="form-content"><span class="form-vm">${item.dictRecCompany}</span></span>
             </li>
-            <li>
+            <li class="form-col">
                 <span class="form-title">文号：</span>
-                <span class="form-content">${item.fileCode}</span>
+				<span class="form-content"><span class="form-vm">${item.fileCode}</span></span>
             </li>
         </ul>
-        <div class="form-row form-row-fixtitle">
-            <p class="form-title">文件内容：</p>
-            <p class="form-content">${item.fileTitle}</p>
+        <div class="form-row form-row-fixtitle" style="height: 6cm">
+            <p class="form-title com-strong">文件内容：</p>
+            <c:choose>
+            	<c:when test="${fn:length(item.fileTitle)<=80}">
+					<p class="form-content com-strong" style="text-align:center;">${item.fileTitle}</p>
+				</c:when>
+				<c:when test="${fn:length(item.fileTitle)>80 and fn:length(item.fileTitle)<=136}">
+					<p class="form-content com-strong" style="text-align:center;font-size:0.8cm;line-height:1.5;">${item.fileTitle}</p>
+				</c:when>
+				<c:when test="${fn:length(item.fileTitle)>136 and fn:length(item.fileTitle)<=170}">
+					<p class="form-content com-strong" style="text-align:center;font-size:0.7cm;line-height:1.3;">${item.fileTitle}</p>
+				</c:when>
+				<c:when test="${fn:length(item.fileTitle)>170 and fn:length(item.fileTitle)<=240}">
+					<p class="form-content com-strong" style="text-align:center;font-size:0.6cm;line-height:1.2;">${item.fileTitle}</p>
+				</c:when>
+				<c:otherwise>
+					<p class="form-content com-strong" style="text-align:center;font-size:0.55cm;line-height:1.1;">${item.fileTitle}</p>
+				</c:otherwise>
+			</c:choose>
+        </div>
+        <div class="form-row form-row-fixtitle" style="height: 7cm">
+            <p class="form-title com-strong">局领导批示：</p>
+            <p class="form-content form-content-center font-font-song">${item.leaderIns}</p>
+        </div>
+        <div class="form-row form-row-fixtitle" style="height: 10cm">
+            <p class="form-title com-strong">拟办意见：</p>
+            <c:choose>
+            	<c:when test="${fn:length(item.proposedComments)<=56}">
+					 <p class="form-content form-content-center font-font-song">${item.proposedComments}</p>
+					 <div class="form-opinion">
+		                <div class="form-opinion-inner">
+		                    <p class="form-opinion-text font-font-song">市局办公室</p>
+		                    <p class="form-opinion-text font-font-song"><fmt:formatDate value="${item.proposedDate}" pattern="yyyy.MM.dd"/></p>
+		                </div>
+		            </div>
+				</c:when>
+				<c:when test="${fn:length(item.proposedComments)>56 and fn:length(item.proposedComments)<=158}">
+					 <p class="form-content form-content-center font-font-song" style="font-size:0.76cm;line-height:1.5;">${item.proposedComments}</p>
+					 <div class="form-opinion">
+		                <div class="form-opinion-inner">
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.76cm;line-height:1.5;">市局办公室</p>
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.76cm;line-height:1.5;"><fmt:formatDate value="${item.proposedDate}" pattern="yyyy.MM.dd"/></p>
+		                </div>
+		            </div>
+				</c:when>
+				<c:when test="${fn:length(item.proposedComments)>158 and fn:length(item.proposedComments)<=236}">
+					 <p class="form-content form-content-center font-font-song" style="font-size:0.7cm;line-height:1.3;">${item.proposedComments}</p>
+					 <div class="form-opinion">
+		                <div class="form-opinion-inner">
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.7cm;line-height:1.3;">市局办公室</p>
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.7cm;line-height:1.3;"><fmt:formatDate value="${item.proposedDate}" pattern="yyyy.MM.dd"/></p>
+		                </div>
+		            </div>
+				</c:when>
+				<c:when test="${fn:length(item.proposedComments)>236 and fn:length(item.proposedComments)<=358}">
+					 <p class="form-content form-content-center font-font-song" style="font-size:0.6cm;line-height:1.2;">${item.proposedComments}</p>
+					 <div class="form-opinion">
+		                <div class="form-opinion-inner">
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.6cm;line-height:1.2;">市局办公室</p>
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.6cm;line-height:1.2;"><fmt:formatDate value="${item.proposedDate}" pattern="yyyy.MM.dd"/></p>
+		                </div>
+		            </div>
+				</c:when>
+				<c:otherwise>
+					 <p class="form-content form-content-center font-font-song" style="font-size:0.55cm;line-height:1.1;">${item.proposedComments}</p>
+					 <div class="form-opinion">
+		                <div class="form-opinion-inner">
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.55cm;line-height:1.1;">市局办公室</p>
+		                    <p class="form-opinion-text font-font-song" style="font-size:0.55cm;line-height:1.1;"><fmt:formatDate value="${item.proposedDate}" pattern="yyyy.MM.dd"/></p>
+		                </div>
+		            </div>
+				</c:otherwise>
+			</c:choose>
         </div>
         <div class="form-row form-row-fixtitle">
-            <p class="form-title">局领导批示：</p>
-            <p class="form-content">${item.leaderIns}</p>
-        </div>
-        <div class="form-row form-row-fixtitle">
-            <p class="form-title">拟办意见：</p>
-            <p class="form-content">${item.proposedComments}</p>
-        </div>
-        <div class="form-row form-row-fixtitle">
-            <p class="form-title">备注：</p>
-            <p class="form-content">${item.memo}</p>
+            <p class="form-title com-strong">备注：</p>
+            <p class="form-content form-content-center font-font-song">${item.memo}</p>
         </div>
         <c:if test="${not empty item.handlePres }">
         	<div class="form-row">

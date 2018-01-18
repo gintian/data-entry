@@ -1,5 +1,5 @@
 INSERT INTO sys_dict (dictName,dictCode,dictType,remark,STATUS) VALUES ('机构类别','DICT_ORG_CATEGORY',0,'',1);
-INSERT INTO sys_dict_item (dictId,itemName,itemCode,itemVal,remark,STATUS,orderNo) VALUES (((SELECT t.dictId FROM sys_dict t WHERE t.dictCode='DICT_ORG_CATEGORY')),'局领导','ORG_CATEGORY_JLD','1','',1,'1');
+--INSERT INTO sys_dict_item (dictId,itemName,itemCode,itemVal,remark,STATUS,orderNo) VALUES (((SELECT t.dictId FROM sys_dict t WHERE t.dictCode='DICT_ORG_CATEGORY')),'局领导','ORG_CATEGORY_JLD','1','',1,'1');
 INSERT INTO sys_dict_item (dictId,itemName,itemCode,itemVal,remark,STATUS,orderNo) VALUES (((SELECT t.dictId FROM sys_dict t WHERE t.dictCode='DICT_ORG_CATEGORY')),'局直各单位','ORG_CATEGORY_JZGDW','2','',1,'2');
 INSERT INTO sys_dict_item (dictId,itemName,itemCode,itemVal,remark,STATUS,orderNo) VALUES (((SELECT t.dictId FROM sys_dict t WHERE t.dictCode='DICT_ORG_CATEGORY')),'各分局县（市）区公安局','ORG_CATEGORY_GFJXSQGAJ','3','',1,'3');
 INSERT INTO sys_dict_item (dictId,itemName,itemCode,itemVal,remark,STATUS,orderNo) VALUES (((SELECT t.dictId FROM sys_dict t WHERE t.dictCode='DICT_ORG_CATEGORY')),'内部各单位','ORG_CATEGORY_NBGDW','4','',1,'4');
@@ -17,6 +17,12 @@ insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderN
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY')),'挂号信件','FILE_CATEGORY_GHXJ','3','',1,'3');
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY')),'普通信件','FILE_CATEGORY_PTXJ','4','',1,'4');
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY')),'密码电报','FILE_CATEGORY_MMDB','5','',1,'5');
+
+insert into sys_dict (dictName,dictCode,dictType,remark,status) values ('文件类别（非涉密）','DICT_FILE_CATEGORY_OPT',0,'',1);
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY_OPT')),'公文件','FILE_CATEGORY_GWJ','1','',1,'1');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY_OPT')),'机要件','FILE_CATEGORY_JYJ','2','',1,'2');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY_OPT')),'挂号信件','FILE_CATEGORY_GHXJ','3','',1,'3');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_FILE_CATEGORY_OPT')),'普通信件','FILE_CATEGORY_PTXJ','4','',1,'4');
 
 insert into sys_dict (dictName,dictCode,dictType,remark,status) values ('来文单位','DICT_REC_COMPANY',0,'',1);
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_REC_COMPANY')),'公安部','REC_COMPANY_GAB','1','',1,'1');
@@ -38,8 +44,19 @@ insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderN
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_DENSE')),'绝密','DENSE_JUEM','4','',1,'4');
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_DENSE')),'内部文件','DENSE_NBWJ','5','',1,'5');
 
+insert into sys_dict (dictName,dictCode,dictType,remark,status) values ('密级（非涉密）','DICT_DENSE_OPT',0,'',1);
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_DENSE_OPT')),'非密','DENSE_FM','1','',1,'1');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_DENSE_OPT')),'内部文件','DENSE_NBWJ','5','',1,'5');
+
 insert into sys_dict (dictName,dictCode,dictType,remark,status) values ('等级','DICT_GRADE',0,'',1);
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_GRADE')),'普通','GRADE_PT','1','',1,'1');
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_GRADE')),'平急','GRADE_PJ','2','',1,'2');
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_GRADE')),'加急','GRADE_JJ','3','',1,'3');
 insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_GRADE')),'特提','GRADE_TJ','4','',1,'4');
+
+insert into sys_dict (dictName,dictCode,dictType,remark,status) values ('收发文前缀','DICT_REC_SEND_PREFIX',0,'',1);
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_REC_SEND_PREFIX')),'收文号前缀','PREFIX_REC','SW','',1,'1');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_REC_SEND_PREFIX')),'收文号前缀（涉密）','PREFIX_REC_DENSE','MS','',1,'2');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_REC_SEND_PREFIX')),'发文号前缀','PREFIX_SEND','FW','',1,'3');
+insert into sys_dict_item (dictId,itemName,itemCode,itemVal,remark,status,orderNo) values (((select t.dictId from sys_dict t where t.dictCode='DICT_REC_SEND_PREFIX')),'发文号前缀（涉密）','PREFIX_SEND_DENSE','MF','',1,'4');
+

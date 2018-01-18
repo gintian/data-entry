@@ -6,7 +6,7 @@
 	<meta name="renderer" content="webkit">
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 	<link rel="stylesheet" href="${ctx }">
-    <title>拟办单</title>
+    <title>督办单</title>
     <%@include file="/html/jsp/common.jsp" %>
     <link href="${resource}/css/proposed-style.css" rel="stylesheet" />
     <style>
@@ -51,14 +51,14 @@
 <body>
 <div class="panelBar" id="panelBarDiv"></div>
 <div class="infoBox" id="infoBoxDiv"></div>
-<div class="filewrap" style="height: 29.7cm; padding-top: 5cm">
+<div class="filewrap" style="height: 33.3cm; padding-top: 10cm">
     <div class="file-header">
         <h3 class="file-title">文件办理告知单</h3>
         <p class="file-subline">(${item.recNo})</p>
     </div>
     <div class="file-container">
-        <p class="file-content-title"><span class="text" style="width:4cm;"></span>单位并<span class="text" style="width:2.5cm;"></span>领导：</p>   
-        <p class="file-content"><span class="text"></span>月<span class="text"></span>日，省厅党委委员、副市长，公安局长潘东升在${item.fileTitle}（${item.fileCode}）文件上批示：请<span class="text" style="width:2.5cm;"></span>领导阅处。</p>                  
+        <p class="file-content-title"><span class="text" style="width:4cm;"></span>并<span class="text" style="width:2.5cm;"></span>：</p>   
+        <p class="file-content"><span class="text"></span>月<span class="text"></span>日，省厅党委委员、副市长，公安局长潘东升在《${item.fileTitle}》（${item.fileCode}）文件上批示：<span class="text" style="width:4.5cm;"></span></p>                  
         <p class="file-content">现将领导批示转给你们，请于<span class="text"></span>月<span class="text"></span>日前将落实情况反馈潘局长。联系人：郝炬，87026166；传真号码：87026009。</p>                  
         <p class="file-content">附件：${item.attachment}</p>                  
     </div>

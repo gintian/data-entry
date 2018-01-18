@@ -36,11 +36,18 @@ function save(actionBtn){
 	
 	var dictDenseVal = $("#dictDense").val();
 	if(dictDenseVal == 'DENSE_MM' || dictDenseVal == 'DENSE_JIM' || dictDenseVal == 'DENSE_JUEM'){
-		var sendCompanysCnt = $('input[name="organization"]:checked').length + ($('#sendCompanysOther').val() ? 1 : 0);
+		/* var sendCompanysCnt = $('input[name="organization"]:checked').length + ($('#sendCompanysOther').val() ? 1 : 0);
 		var denseCodeCnt = parseInt($('#denseCode').val());
 		if(sendCompanysCnt != denseCodeCnt){
 			$.alert("密级编号填写有误，请核查发送单位");
 			toolBar.enableBut(actionBtn);return false;
+		} */
+		var denseCode = $('#denseCode').val();
+		var patt = /^(\d+)[\-](\d+)$/;
+		if(denseCode && !patt.test(denseCode)){
+			$.alert("密级编号填写有误");
+			toolBar.enableBut(actionBtn);
+			return false;
 		}
 	}
 	
@@ -104,9 +111,6 @@ $(function() {
 			},
 			'dictDense':{
 				required: true
-			},
-			'denseCode':{
-				number:true
 			}
 	}
 	
@@ -179,7 +183,7 @@ $(function() {
 						     <tr>
 					       		<td class="td-label">文件类别</td>
 							  	<td class="td-value">
-										   <tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY" headerLabel="--请选择--" value="${sendFile.dictFileCategory}"></tag:dict>
+										   <tag:dict id="dictFileCategory" dictCode="DICT_FILE_CATEGORY_OPT" headerLabel="--请选择--" value="${sendFile.dictFileCategory}"></tag:dict>
 							  </td>
 							 </tr>
 						     <tr>
@@ -203,9 +207,17 @@ $(function() {
 						      <tr id="denseCodeTr" <c:if test="${empty sendFile.dictDense or sendFile.dictDense=='DENSE_FM' or sendFile.dictDense=='DENSE_NBWJ' }">style="display: none"</c:if>>
 					       		<td class="td-label">密级编号</td>
 							  	<td class="td-value">
-									   	   <input type="text"  id="denseCode" name="denseCode" value="${sendFile.denseCode}" />
+									   	   <input type="text" id="denseCode" name="denseCode" value="${sendFile.denseCode}" /> <span>(格式：数字-数字，例如3-10)</span>
 							  </td>
 							 </tr>
+							 <c:if test="${isDense }">
+								 <tr >
+						       		<td class="td-label">机要编号</td>
+								  	<td class="td-value">
+											  <input type="text"  id="confidentialCode" name="confidentialCode" value="${sendFile.confidentialCode}" />
+								  </td>
+								 </tr>
+							 </c:if>
 							 <tr>
 					       		<td class="td-label">备注</td>
 							  	<td class="td-value">
